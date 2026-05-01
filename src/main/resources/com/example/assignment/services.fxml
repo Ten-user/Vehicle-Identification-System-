@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.assignment.ServicesController"
+      spacing="0" style="-fx-background-color: #f0f2f5;">
+
+    <HBox style="-fx-background-color: #27ae60; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
+        <Label text="🔧 Service Records" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
+        <Label fx:id="totalCostLabel" text="Total Cost: R0.00" style="-fx-text-fill: white;"/>
+        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
+    </HBox>
+
+    <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
+        <VBox spacing="10" style="-fx-padding: 16;">
+            <HBox spacing="8">
+                <TextField fx:id="searchField" promptText="Search services..." prefWidth="280"/>
+                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
+            </HBox>
+            <TableView fx:id="serviceTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="colType" text="Service Type" prefWidth="130"/>
+                    <TableColumn fx:id="colDesc" text="Description" prefWidth="160"/>
+                    <TableColumn fx:id="colCost" text="Cost (R)" prefWidth="90"/>
+                    <TableColumn fx:id="colWorkshop" text="Workshop" prefWidth="120"/>
+                </columns>
+                <placeholder><Label text="No service records found"/></placeholder>
+            </TableView>
+            <Pagination fx:id="pagination"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="10" style="-fx-padding: 20;">
+                <Label text="Service Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                <Label text="Vehicle *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle" maxWidth="Infinity"/>
+
+                <Label text="Service Date *" style="-fx-font-weight: bold;"/>
+                <DatePicker fx:id="serviceDatePicker" maxWidth="Infinity"/>
+
+                <Label text="Service Type *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="serviceTypeCombo" promptText="Select type" maxWidth="Infinity"/>
+
+                <Label text="Description" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="descriptionArea" promptText="Service description" prefRowCount="3"/>
+
+                <Label text="Cost (R)" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="costField" promptText="0.00"/>
+
+                <Label text="Workshop" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="workshopField" promptText="Workshop name"/>
+
+                <Label text="Mileage" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="mileageField" promptText="Current mileage"/>
+
+                <Label text="Next Service Date" style="-fx-font-weight: bold;"/>
+                <DatePicker fx:id="nextServiceDatePicker" maxWidth="Infinity"/>
+
+                <Separator/>
+
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
+                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </SplitPane>
+</VBox>

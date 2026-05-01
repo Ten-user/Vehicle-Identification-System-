@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.assignment.LoginController"
+           style="-fx-background-color: linear-gradient(to bottom right, #1a252f, #2c3e50);">
+
+    <VBox fx:id="loginContainer" spacing="16" alignment="CENTER"
+          style="-fx-background-color: white; -fx-padding: 50; -fx-background-radius: 14;
+                 -fx-max-width: 420; -fx-max-height: 520;">
+
+        <Label text="🚗 VIS" style="-fx-font-size: 40px; -fx-text-fill: #2980b9;"/>
+        <Label fx:id="loginTitle" text="Vehicle Identification System"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Label text="Please sign in to continue"
+               style="-fx-text-fill: #7f8c8d; -fx-font-size: 13px;"/>
+
+        <VBox spacing="6">
+            <Label text="Username" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="usernameField" promptText="Enter username" prefWidth="320"/>
+        </VBox>
+
+        <VBox spacing="6">
+            <Label text="Password" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
+            <PasswordField fx:id="passwordField" promptText="Enter password" prefWidth="320"/>
+        </VBox>
+
+        <Label fx:id="statusLabel" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+
+        <ProgressIndicator fx:id="loginProgress" prefWidth="30" prefHeight="30"/>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="loginButton" text="Sign In" onAction="#handleLogin"
+                    prefWidth="150" prefHeight="40"
+                    style="-fx-background-color: #2980b9; -fx-text-fill: white;
+                           -fx-font-size: 14px; -fx-font-weight: bold;
+                           -fx-background-radius: 7; -fx-cursor: hand;"/>
+            <Button text="Exit" onAction="#handleExit" prefWidth="100" prefHeight="40"
+                    style="-fx-background-color: #95a5a6; -fx-text-fill: white;
+                           -fx-font-size: 14px; -fx-background-radius: 7; -fx-cursor: hand;"/>
+        </HBox>
+
+        <Label text="© 2026 Vehicle Identification System" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
+    </VBox>
+</StackPane>

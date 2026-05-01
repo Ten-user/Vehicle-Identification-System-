@@ -1,0 +1,212 @@
+/* ============================================================
+   Vehicle Identification System - Style Sheet
+   ============================================================ */
+
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #f0f2f5;
+}
+
+/* ---- BUTTONS ---- */
+.button {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 18 8 18;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #1a6fa8;
+}
+.button:pressed {
+    -fx-background-color: #145a87;
+}
+.button.danger {
+    -fx-background-color: #e74c3c;
+}
+.button.danger:hover {
+    -fx-background-color: #c0392b;
+}
+.button.success {
+    -fx-background-color: #27ae60;
+}
+.button.success:hover {
+    -fx-background-color: #1e8449;
+}
+.button.warning {
+    -fx-background-color: #f39c12;
+}
+
+/* ---- TEXT FIELDS ---- */
+.text-field, .password-field, .text-area {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 7 10 7 10;
+}
+.text-field:focused, .password-field:focused, .text-area:focused {
+    -fx-border-color: #2980b9;
+}
+
+/* ---- COMBO BOX ---- */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+}
+.combo-box:focused {
+    -fx-border-color: #2980b9;
+}
+
+/* ---- TABLE VIEW ---- */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dde1e7;
+    -fx-border-radius: 6;
+}
+.table-view .column-header {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+}
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+.table-row-cell:even {
+    -fx-background-color: white;
+}
+.table-row-cell:selected {
+    -fx-background-color: #d0e8f5;
+    -fx-text-fill: #2c3e50;
+}
+
+/* ---- LABELS ---- */
+.label {
+    -fx-text-fill: #2c3e50;
+}
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+.status-label {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 12px;
+}
+
+/* ---- MENU BAR ---- */
+.menu-bar {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 2 0 2 0;
+}
+.menu-bar .menu .label {
+    -fx-text-fill: white;
+}
+.menu-bar .menu:hover {
+    -fx-background-color: #34495e;
+}
+.context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
+}
+
+/* ---- LOGIN SCREEN ---- */
+#loginContainer {
+    -fx-background-color: white;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 40;
+    -fx-max-width: 420;
+    -fx-max-height: 500;
+}
+#loginTitle {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+#loginSubtitle {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 13px;
+}
+#statusLabel {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12px;
+}
+#loginButton {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200;
+    -fx-padding: 10 0 10 0;
+    -fx-background-radius: 6;
+}
+#loginButton:hover {
+    -fx-background-color: #1a6fa8;
+}
+
+/* ---- DASHBOARD BUTTONS ---- */
+#vehiclesBtn    { -fx-background-color: #2980b9; -fx-text-fill: white; }
+#customersBtn   { -fx-background-color: #16a085; -fx-text-fill: white; }
+#servicesBtn    { -fx-background-color: #27ae60; -fx-text-fill: white; }
+#policeBtn      { -fx-background-color: #8e44ad; -fx-text-fill: white; }
+#violationsBtn  { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+#insuranceBtn   { -fx-background-color: #d35400; -fx-text-fill: white; }
+#queriesBtn     { -fx-background-color: #2c3e50; -fx-text-fill: white; }
+#usersBtn       { -fx-background-color: #7f8c8d; -fx-text-fill: white; }
+#logoutBtn      { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+
+.module-btn {
+    -fx-pref-width: 160;
+    -fx-pref-height: 80;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+.module-btn:hover {
+    -fx-opacity: 0.9;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+/* ---- PROGRESS ---- */
+.progress-bar .track { -fx-background-color: #ecf0f1; -fx-background-radius: 5; }
+.progress-bar .bar   { -fx-background-color: #27ae60; -fx-background-radius: 5; }
+
+/* ---- PAGINATION ---- */
+.pagination .pagination-control .left-arrow-button,
+.pagination .pagination-control .right-arrow-button {
+    -fx-background-color: #2980b9;
+}
+
+/* ---- SCROLL PANE ---- */
+.scroll-pane { -fx-background-color: transparent; }
+.scroll-pane > .viewport { -fx-background-color: transparent; }
+
+/* ---- DATE PICKER ---- */
+.date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+}
+
+/* ---- SECTION HEADERS ---- */
+.section-header {
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 6 12 6 12;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 0 0 1 0;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}

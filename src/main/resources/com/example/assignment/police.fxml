@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.assignment.PoliceController"
+      spacing="0" style="-fx-background-color: #f0f2f5;">
+
+    <HBox style="-fx-background-color: #8e44ad; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
+        <Label text="👮 Police Reports" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="recordCountLabel" text="Total Reports: 0" style="-fx-text-fill: white;"/>
+        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
+    </HBox>
+
+    <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
+        <VBox spacing="10" style="-fx-padding: 16;">
+            <HBox spacing="8">
+                <TextField fx:id="searchField" promptText="Search reports..." prefWidth="280"/>
+                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
+            </HBox>
+            <TableView fx:id="reportTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                    <TableColumn fx:id="colRegNumber" text="Vehicle" prefWidth="150"/>
+                    <TableColumn fx:id="colType" text="Type" prefWidth="110"/>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="colOfficer" text="Officer" prefWidth="120"/>
+                    <TableColumn fx:id="colStation" text="Station" prefWidth="120"/>
+                    <TableColumn fx:id="colCase" text="Case #" prefWidth="100"/>
+                </columns>
+                <placeholder><Label text="No police reports found"/></placeholder>
+            </TableView>
+            <Pagination fx:id="pagination"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="10" style="-fx-padding: 20;">
+                <Label text="Report Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                <Label text="Vehicle *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle" maxWidth="Infinity"/>
+
+                <Label text="Report Type *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="reportTypeCombo" promptText="Select type" maxWidth="Infinity"/>
+
+                <Label text="Report Date *" style="-fx-font-weight: bold;"/>
+                <DatePicker fx:id="reportDatePicker" maxWidth="Infinity"/>
+
+                <Label text="Description" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="descriptionArea" promptText="Report description" prefRowCount="3"/>
+
+                <Label text="Officer Name" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="officerField" promptText="Officer name"/>
+
+                <Label text="Station" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="stationField" promptText="Police station"/>
+
+                <Label text="Case Number" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="caseNumberField" promptText="Case number"/>
+
+                <Separator/>
+
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
+                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </SplitPane>
+</VBox>

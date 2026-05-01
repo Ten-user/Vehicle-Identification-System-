@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.assignment.VehiclesController"
+      spacing="0" style="-fx-background-color: #f0f2f5;">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: #2980b9; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
+        <Label text="🚗 Vehicle Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white; -fx-font-size: 13px;"/>
+        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
+    </HBox>
+
+    <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS">
+
+        <!-- LEFT: Table + Search -->
+        <VBox spacing="10" style="-fx-padding: 16;">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search vehicles..." prefWidth="280"/>
+                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
+            </HBox>
+            <TableView fx:id="vehicleTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                    <TableColumn fx:id="colRegNumber" text="Reg Number" prefWidth="110"/>
+                    <TableColumn fx:id="colMake" text="Make" prefWidth="80"/>
+                    <TableColumn fx:id="colModel" text="Model" prefWidth="90"/>
+                    <TableColumn fx:id="colYear" text="Year" prefWidth="55"/>
+                    <TableColumn fx:id="colColor" text="Color" prefWidth="70"/>
+                    <TableColumn fx:id="colOwner" text="Owner" prefWidth="120"/>
+                    <TableColumn fx:id="colStolen" text="Status" prefWidth="80"/>
+                </columns>
+                <placeholder><Label text="No vehicles found"/></placeholder>
+            </TableView>
+            <Pagination fx:id="pagination"/>
+            <Label fx:id="statusLabel" text="" style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px;"/>
+        </VBox>
+
+        <!-- RIGHT: Form -->
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="12" style="-fx-padding: 20;">
+                <Label text="Vehicle Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                <Label text="Registration Number *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="regNumberField" promptText="e.g. GP123456"/>
+
+                <Label text="Make *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="makeField" promptText="e.g. Toyota"/>
+
+                <Label text="Model *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="modelField" promptText="e.g. Hilux"/>
+
+                <Label text="Year *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="yearField" promptText="e.g. 2020"/>
+
+                <Label text="Color" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="colorField" promptText="e.g. White"/>
+
+                <Label text="Owner" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="ownerCombo" promptText="Select owner" maxWidth="Infinity"/>
+
+                <Label text="Engine Number" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="engineNumberField" promptText="Engine number"/>
+
+                <Label text="Chassis Number" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="chassisNumberField" promptText="Chassis number"/>
+
+                <Separator/>
+
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
+                    <Button fx:id="updateBtn" text="✏️ Update" onAction="#handleUpdate" prefWidth="80"/>
+                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </SplitPane>
+</VBox>

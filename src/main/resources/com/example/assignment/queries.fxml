@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.assignment.QueriesController"
+      spacing="0" style="-fx-background-color: #f0f2f5;">
+
+    <HBox style="-fx-background-color: #2c3e50; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
+        <Label text="💬 Customer Queries" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
+        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
+    </HBox>
+
+    <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
+        <VBox spacing="10" style="-fx-padding: 16;">
+            <HBox spacing="8">
+                <TextField fx:id="searchField" promptText="Search queries..." prefWidth="280"/>
+                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
+            </HBox>
+            <TableView fx:id="queryTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                    <TableColumn fx:id="colCustomer" text="Customer" prefWidth="130"/>
+                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                    <TableColumn fx:id="colQuery" text="Query" prefWidth="200"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
+                </columns>
+                <placeholder><Label text="No queries found"/></placeholder>
+            </TableView>
+            <Pagination fx:id="pagination"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="10" style="-fx-padding: 20;">
+                <Label text="Query Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                <Label text="Customer *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="customerCombo" promptText="Select customer" maxWidth="Infinity"/>
+
+                <Label text="Vehicle" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle (optional)" maxWidth="Infinity"/>
+
+                <Label text="Query Date *" style="-fx-font-weight: bold;"/>
+                <DatePicker fx:id="queryDatePicker" maxWidth="Infinity"/>
+
+                <Label text="Query *" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="queryTextArea" promptText="Enter query..." prefRowCount="4"/>
+
+                <Label text="Response" style="-fx-font-weight: bold;"/>
+                <TextArea fx:id="responseTextArea" promptText="Enter response..." prefRowCount="4"/>
+
+                <Label text="Status" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="statusCombo" promptText="Select status" maxWidth="Infinity"/>
+
+                <Separator/>
+
+                <HBox spacing="6" alignment="CENTER">
+                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="75"/>
+                    <Button fx:id="respondBtn" text="💬 Respond" onAction="#handleRespond" prefWidth="90"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="75"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="75"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </SplitPane>
+</VBox>

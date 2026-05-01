@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.assignment.UsersController"
+      spacing="0" style="-fx-background-color: #f0f2f5;">
+
+    <HBox style="-fx-background-color: #7f8c8d; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
+        <Label text="⚙️ User Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="recordCountLabel" text="Total Users: 0" style="-fx-text-fill: white;"/>
+        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
+                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
+    </HBox>
+
+    <SplitPane dividerPositions="0.63" VBox.vgrow="ALWAYS">
+        <VBox spacing="10" style="-fx-padding: 16;">
+            <HBox spacing="8">
+                <TextField fx:id="searchField" promptText="Search users..." prefWidth="280"/>
+                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
+            </HBox>
+            <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                    <TableColumn fx:id="colUsername" text="Username" prefWidth="120"/>
+                    <TableColumn fx:id="colRole" text="Role" prefWidth="100"/>
+                    <TableColumn fx:id="colName" text="Full Name" prefWidth="150"/>
+                    <TableColumn fx:id="colEmail" text="Email" prefWidth="160"/>
+                    <TableColumn fx:id="colActive" text="Active" prefWidth="60"/>
+                </columns>
+                <placeholder><Label text="No users found"/></placeholder>
+            </TableView>
+            <Pagination fx:id="pagination"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="10" style="-fx-padding: 20;">
+                <Label text="User Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                <Label text="Username *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="usernameField" promptText="Username"/>
+
+                <Label text="Password *" style="-fx-font-weight: bold;"/>
+                <PasswordField fx:id="passwordField" promptText="Password"/>
+
+                <Label text="Role *" style="-fx-font-weight: bold;"/>
+                <ComboBox fx:id="roleCombo" promptText="Select role" maxWidth="Infinity"/>
+
+                <Label text="Full Name *" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="fullNameField" promptText="Full name"/>
+
+                <Label text="Email" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="emailField" promptText="Email"/>
+
+                <Label text="Phone" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="phoneField" promptText="Phone"/>
+
+                <Separator/>
+
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="saveBtn" text="💾 Register" onAction="#handleSave" prefWidth="90"/>
+                    <Button fx:id="toggleActiveBtn" text="🔄 Toggle Active" onAction="#handleToggleActive" prefWidth="110"
+                            style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </SplitPane>
+</VBox>
