@@ -1,48 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<StackPane xmlns="http://javafx.com/javafx/17"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.assignment.LoginController"
-           style="-fx-background-color: linear-gradient(to bottom right, #1a252f, #2c3e50);">
+<HBox prefHeight="700" prefWidth="1100" styleClass="login-root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment.LoginController">
 
-    <VBox fx:id="loginContainer" spacing="16" alignment="CENTER"
-          style="-fx-background-color: white; -fx-padding: 50; -fx-background-radius: 14;
-                 -fx-max-width: 420; -fx-max-height: 520;">
+    <!-- LEFT: Brand Panel -->
+    <VBox spacing="0" styleClass="login-left-panel">
+        <VBox spacing="28" style="-fx-padding: 60 48 60 48;" VBox.vgrow="ALWAYS">
 
-        <Label text="🚗 VIS" style="-fx-font-size: 40px; -fx-text-fill: #2980b9;"/>
-        <Label fx:id="loginTitle" text="Vehicle Identification System"
-               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-        <Label text="Please sign in to continue"
-               style="-fx-text-fill: #7f8c8d; -fx-font-size: 13px;"/>
+            <!-- Logo area -->
+            <VBox spacing="6">
+                <Label styleClass="login-brand-title" text="VIS" />
+                <Label styleClass="login-brand-sub" text="VEHICLE IDENTIFICATION SYSTEM" />
+            </VBox>
 
-        <VBox spacing="6">
-            <Label text="Username" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="usernameField" promptText="Enter username" prefWidth="320"/>
+            <Label styleClass="login-tagline" text="A secure, integrated platform for law enforcement, insurance, and vehicle management across Lesotho." wrapText="true" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Stats row -->
+            <HBox spacing="12">
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="4" />
+                    <Label styleClass="login-stat-label" text="MODULES" />
+                </VBox>
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="5" />
+                    <Label styleClass="login-stat-label" text="USER ROLES" />
+                </VBox>
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="24/7" />
+                    <Label styleClass="login-stat-label" text="UPTIME" />
+                </VBox>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Progress Indicators (assignment requirement) -->
+            <VBox spacing="8">
+                <Label styleClass="login-stat-label" text="SYSTEM HEALTH" />
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <ProgressBar fx:id="systemHealthBar" prefWidth="180" progress="0.97" style="-fx-accent: #4A90D9;" />
+                    <ProgressIndicator fx:id="connectionIndicator" prefHeight="22" prefWidth="22" style="-fx-progress-color: #4A90D9;" />
+                    <Label fx:id="systemStatusLabel" style="-fx-text-fill: #4A90D9;" styleClass="login-stat-label" text="Online" />
+                </HBox>
+            </VBox>
+
+            <Label styleClass="login-footer" text="Limkwing University — OOP2 2026" />
         </VBox>
-
-        <VBox spacing="6">
-            <Label text="Password" style="-fx-font-weight: bold; -fx-text-fill: #34495e;"/>
-            <PasswordField fx:id="passwordField" promptText="Enter password" prefWidth="320"/>
-        </VBox>
-
-        <Label fx:id="statusLabel" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
-
-        <ProgressIndicator fx:id="loginProgress" prefWidth="30" prefHeight="30"/>
-
-        <HBox spacing="10" alignment="CENTER">
-            <Button fx:id="loginButton" text="Sign In" onAction="#handleLogin"
-                    prefWidth="150" prefHeight="40"
-                    style="-fx-background-color: #2980b9; -fx-text-fill: white;
-                           -fx-font-size: 14px; -fx-font-weight: bold;
-                           -fx-background-radius: 7; -fx-cursor: hand;"/>
-            <Button text="Exit" onAction="#handleExit" prefWidth="100" prefHeight="40"
-                    style="-fx-background-color: #95a5a6; -fx-text-fill: white;
-                           -fx-font-size: 14px; -fx-background-radius: 7; -fx-cursor: hand;"/>
-        </HBox>
-
-        <Label text="© 2026 Vehicle Identification System" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
     </VBox>
-</StackPane>
+
+    <!-- RIGHT: Login Form -->
+    <VBox fx:id="loginContainer" alignment="CENTER" styleClass="login-right-panel" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER_LEFT" maxWidth="380" spacing="0">
+
+            <VBox spacing="6" style="-fx-padding: 0 0 32 0;">
+                <Label styleClass="login-form-title" text="Welcome back" />
+                <Label styleClass="login-form-sub" text="Sign in to your account to continue" />
+            </VBox>
+
+            <Pane prefHeight="1" prefWidth="380" style="-fx-padding: 0 0 28 0;" styleClass="login-divider" />
+            <Region prefHeight="28" />
+
+            <!-- Username -->
+            <VBox spacing="6" style="-fx-padding: 0 0 16 0;">
+                <Label styleClass="login-field-label" text="USERNAME" />
+                <TextField fx:id="usernameField" prefWidth="380" promptText="Enter your username" styleClass="login-field" />
+            </VBox>
+
+            <!-- Password -->
+            <VBox spacing="6" style="-fx-padding: 0 0 8 0;">
+                <Label styleClass="login-field-label" text="PASSWORD" />
+                <PasswordField fx:id="passwordField" prefWidth="380" promptText="Enter your password" styleClass="login-field" />
+            </VBox>
+
+            <Label fx:id="statusLabel" prefWidth="380" style="-fx-padding: 6 0 14 0;" styleClass="login-error" text="" />
+
+            <!-- Progress indicator shown during login -->
+            <ProgressIndicator fx:id="loginProgress" prefHeight="28" prefWidth="28" style="-fx-progress-color: #1A5FC8;" />
+
+            <!-- Sign In Button -->
+            <Button fx:id="loginButton" onAction="#handleLogin" prefWidth="380" style="-fx-padding: 0 0 0 0;" styleClass="login-btn" text="SIGN IN">
+                <effect>
+                    <DropShadow color="#1A5FC888" offsetY="3" radius="12" spread="0.1" />
+                </effect>
+            </Button>
+
+            <Region prefHeight="20" />
+
+            <!-- Exit link -->
+            <HBox alignment="CENTER" prefWidth="380" style="-fx-background-color: gray;">
+                <Button onAction="#handleExit" style="-fx-background-color: transparent; -fx-text-fill: #AABBCC;                                -fx-font-size: 12px; -fx-cursor: hand; -fx-padding: 4;" text="Exit Application" />
+            </HBox>
+
+            <Region prefHeight="40" />
+
+            <!-- Demo credentials -->
+            <VBox spacing="6" style="-fx-background-color: #F8F9FC; -fx-background-radius: 8;                                       -fx-border-color: #E8EAEF; -fx-border-radius: 8; -fx-padding: 14;">
+                <Label style="-fx-font-size: 10px; -fx-font-weight: bold;                              -fx-text-fill: #AABBCC; -fx-letter-spacing: 1;" text="DEMO CREDENTIALS" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #667788;" text="admin / admin123  |  officer1 / pass123" />
+            </VBox>
+        </VBox>
+    </VBox>
+</HBox>

@@ -1,63 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox fx:id="rootContainer" xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.DashboardController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <!-- Menu Bar (built programmatically in controller) -->
-    <MenuBar fx:id="menuBar"/>
-
-    <!-- Header -->
-    <HBox style="-fx-background-color: #2c3e50; -fx-padding: 20 30 20 30;" alignment="CENTER_LEFT" spacing="20">
-        <Label text="🚗" style="-fx-font-size: 36px;"/>
-        <VBox spacing="4">
-            <Label fx:id="welcomeLabel" text="Welcome" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label fx:id="roleLabel" text="" style="-fx-font-size: 13px; -fx-text-fill: #95a5a6;"/>
+<BorderPane style="-fx-background-color: #F5F6FA;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment.DashboardController">
+    <top>
+        <VBox>
+            <MenuBar fx:id="menuBar" styleClass="menu-bar" />
+            <HBox alignment="CENTER_LEFT" spacing="16" styleClass="top-nav">
+                <VBox spacing="2">
+                    <Label styleClass="nav-system-title" text="Vehicle Identification System" />
+                    <Label styleClass="nav-system-sub" text="Dashboard" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label style="-fx-font-size: 12px; -fx-text-fill: #8899AA;" text="System:" />
+                    <ProgressBar fx:id="systemProgressBar" prefHeight="6" prefWidth="100" progress="0.97" />
+                    <ProgressIndicator fx:id="systemProgressIndicator" prefHeight="20" prefWidth="20" />
+                    <Label fx:id="systemStatusLabel" style="-fx-font-size: 12px; -fx-text-fill: #1DA462; -fx-font-weight: bold;" text="Online" />
+                </HBox>
+                <Separator orientation="VERTICAL" />
+                <VBox alignment="CENTER_RIGHT" spacing="2">
+                    <Label fx:id="welcomeLabel" styleClass="nav-user-name" text="Admin User" />
+                    <Label fx:id="roleLabel" styleClass="nav-user-role" text="Administrator" />
+                </VBox>
+                <Button fx:id="logoutBtn" onAction="#handleLogout" styleClass="nav-logout-btn" text="Logout" />
+            </HBox>
         </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
-        <VBox alignment="CENTER_RIGHT" spacing="4">
-            <Label fx:id="systemStatusLabel" text="System Status: Online" style="-fx-text-fill: #2ecc71; -fx-font-size: 12px;"/>
-            <ProgressBar fx:id="systemProgressBar" prefWidth="160" prefHeight="12"/>
-        </VBox>
-        <ProgressIndicator fx:id="systemProgressIndicator" prefWidth="36" prefHeight="36"/>
-    </HBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="28" style="-fx-padding: 32 36 32 36;">
+                <!-- Page header -->
+                <VBox spacing="4">
+                    <Label styleClass="page-title" text="System Modules" />
+                    <Label styleClass="page-sub" text="Select a module to get started" />
+                </VBox>
 
-    <!-- Module Buttons Grid -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-padding: 20;">
-        <VBox spacing="20" style="-fx-padding: 10;">
-            <Label text="System Modules" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <!-- Stats Row -->
+                <HBox spacing="16">
+                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statVehicles" styleClass="stat-number" text="—" />
+                        <Label styleClass="stat-label" text="Vehicles Registered" />
+                    </VBox>
+                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statCustomers" styleClass="stat-number" text="—" />
+                        <Label styleClass="stat-label" text="Customers" />
+                    </VBox>
+                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statReports" styleClass="stat-number" text="—" />
+                        <Label styleClass="stat-label" text="Police Reports" />
+                    </VBox>
+                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statViolations" style="-fx-text-fill: #E53E3E;" styleClass="stat-number" text="—" />
+                        <Label styleClass="stat-label" text="Unpaid Violations" />
+                    </VBox>
+                </HBox>
 
-            <TilePane hgap="16" vgap="16" prefColumns="4">
-                <Button fx:id="vehiclesBtn"   text="🚗 Vehicles"        onAction="#navigateToVehicles"   styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="customersBtn"  text="👤 Customers"       onAction="#navigateToCustomers"  styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #16a085; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="servicesBtn"   text="🔧 Service Records" onAction="#navigateToServices"   styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="policeBtn"     text="👮 Police Reports"  onAction="#navigateToPolice"     styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="violationsBtn" text="⚠️ Violations"      onAction="#navigateToViolations" styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="insuranceBtn"  text="🛡️ Insurance"       onAction="#navigateToInsurance"  styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #d35400; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="queriesBtn"    text="💬 Queries"         onAction="#navigateToQueries"    styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                <Button fx:id="usersBtn"      text="⚙️ User Management" onAction="#navigateToUsers"      styleClass="module-btn" prefWidth="170" prefHeight="90"
-                        style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"/>
-            </TilePane>
-        </VBox>
-    </ScrollPane>
+                <!-- Module Cards Row 1 -->
+                <HBox spacing="16">
+                    <VBox fx:id="vehiclesCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgVehicles" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Vehicles" />
+                        <Label styleClass="module-card-sub" text="Registration and management" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="vehiclesBtn" maxWidth="Infinity" onAction="#navigateToVehicles" style="-fx-margin-top:12;" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
 
-    <!-- Footer -->
-    <HBox style="-fx-background-color: #ecf0f1; -fx-padding: 10 20 10 20; -fx-border-color: #bdc3c7; -fx-border-width: 1 0 0 0;" alignment="CENTER_LEFT" spacing="20">
-        <Label text="Vehicle Identification System v1.0 | OOP2 2026" style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="logoutBtn" text="🚪 Logout" onAction="#handleLogout"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 12px;
-                       -fx-padding: 6 14 6 14; -fx-background-radius: 6; -fx-cursor: hand;"/>
-    </HBox>
-</VBox>
+                    <VBox fx:id="customersCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgCustomers" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Customers" />
+                        <Label styleClass="module-card-sub" text="Owner information and queries" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="customersBtn" maxWidth="Infinity" onAction="#navigateToCustomers" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+
+                    <VBox fx:id="servicesCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgServices" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Workshop" />
+                        <Label styleClass="module-card-sub" text="Service records and history" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="servicesBtn" maxWidth="Infinity" onAction="#navigateToServices" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+
+                    <VBox fx:id="policeCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgPolice" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Police Reports" />
+                        <Label styleClass="module-card-sub" text="Incidents and investigations" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="policeBtn" maxWidth="Infinity" onAction="#navigateToPolice" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+                </HBox>
+
+                <!-- Module Cards Row 2 -->
+                <HBox spacing="16">
+                    <VBox fx:id="violationsCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgViolations" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Violations" />
+                        <Label styleClass="module-card-sub" text="Traffic fines and status" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="violationsBtn" maxWidth="Infinity" onAction="#navigateToViolations" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+
+                    <VBox fx:id="insuranceCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgInsurance" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Insurance" />
+                        <Label styleClass="module-card-sub" text="Policy management and tracking" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="insuranceBtn" maxWidth="Infinity" onAction="#navigateToInsurance" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+
+                    <VBox fx:id="queriesCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgQueries" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="Queries" />
+                        <Label styleClass="module-card-sub" text="Customer questions and responses" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="queriesBtn" maxWidth="Infinity" onAction="#navigateToQueries" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+
+                    <VBox fx:id="usersCard" alignment="TOP_CENTER" spacing="0" styleClass="module-card" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="imgUsers" fitHeight="70" fitWidth="70" preserveRatio="true" smooth="true" />
+                        <Region prefHeight="10" />
+                        <Label styleClass="module-card-title" text="User Management" />
+                        <Label styleClass="module-card-sub" text="Access control and roles" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button fx:id="usersBtn" maxWidth="Infinity" onAction="#navigateToUsers" styleClass="btn-primary" text="Open Module" />
+                    </VBox>
+                </HBox>
+
+                <HBox alignment="CENTER">
+                    <Label style="-fx-font-size: 11px; -fx-text-fill: #AABBCC;" text="VIS — Vehicle Identification System   |  Limkwing University of Creative Technology" />
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

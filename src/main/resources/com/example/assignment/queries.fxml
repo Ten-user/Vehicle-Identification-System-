@@ -3,71 +3,66 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.QueriesController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #2c3e50; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="💬 Customer Queries" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search queries..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="queryTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colCustomer" text="Customer" prefWidth="130"/>
-                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
-                    <TableColumn fx:id="colQuery" text="Query" prefWidth="200"/>
-                    <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
-                </columns>
-                <placeholder><Label text="No queries found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="10" style="-fx-padding: 20;">
-                <Label text="Query Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Customer *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="customerCombo" promptText="Select customer" maxWidth="Infinity"/>
-
-                <Label text="Vehicle" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle (optional)" maxWidth="Infinity"/>
-
-                <Label text="Query Date *" style="-fx-font-weight: bold;"/>
-                <DatePicker fx:id="queryDatePicker" maxWidth="Infinity"/>
-
-                <Label text="Query *" style="-fx-font-weight: bold;"/>
-                <TextArea fx:id="queryTextArea" promptText="Enter query..." prefRowCount="4"/>
-
-                <Label text="Response" style="-fx-font-weight: bold;"/>
-                <TextArea fx:id="responseTextArea" promptText="Enter response..." prefRowCount="4"/>
-
-                <Label text="Status" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="statusCombo" promptText="Select status" maxWidth="Infinity"/>
-
-                <Separator/>
-
-                <HBox spacing="6" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="75"/>
-                    <Button fx:id="respondBtn" text="💬 Respond" onAction="#handleRespond" prefWidth="90"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="75"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="75"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.QueriesController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="Customer Queries" styleClass="module-title"/>
+                <Label text="Customer Module — Questions, responses and support" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="queryTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colCustomer" text="Customer" prefWidth="140"/>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                        <TableColumn fx:id="colQuery" text="Query" prefWidth="220"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                    </columns>
+                    <placeholder><Label text="No records found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="Details" styleClass="form-section-title"/>
+                    <Label text="Customer" styleClass="form-label"/>
+                    <ComboBox fx:id="customerCombo" styleClass="combo-box" promptText="Select customer" maxWidth="Infinity"/>
+                    <Label text="Vehicle (Optional)" styleClass="form-label"/>
+                    <ComboBox fx:id="vehicleCombo" styleClass="combo-box" promptText="Select vehicle" maxWidth="Infinity"/>
+                    <Label text="Query Date" styleClass="form-label"/>
+                    <DatePicker fx:id="queryDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
+                    <Label text="Query" styleClass="form-label"/>
+                    <TextArea fx:id="queryTextArea" styleClass="form-area" promptText="Enter query..." prefRowCount="4"/>
+                    <Label text="Response" styleClass="form-label"/>
+                    <TextArea fx:id="responseTextArea" styleClass="form-area" promptText="Enter response..." prefRowCount="4"/>
+                    <Label text="Status" styleClass="form-label"/>
+                    <ComboBox fx:id="statusCombo" styleClass="combo-box" promptText="Select status" maxWidth="Infinity"/>
+                    <Separator/>
+                    <HBox spacing="8">
+                        <Button fx:id="saveBtn" text="Add Query" onAction="#handleSave" styleClass="btn-primary"/>
+                        <Button fx:id="respondBtn" text="Respond" onAction="#handleRespond" styleClass="btn-success"/>
+                        <Button fx:id="deleteBtn" text="Delete" onAction="#handleDelete" styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn" text="Clear" onAction="#handleClear" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

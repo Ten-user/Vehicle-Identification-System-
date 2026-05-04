@@ -55,6 +55,8 @@ public class Violation extends VehicleRecord {
         return String.format("%,.2f", fineAmount);
     }
 
+    public boolean isUnpaid() { return !isPaid(); }
+
     public boolean isPaid() {
         return "Paid".equalsIgnoreCase(status);
     }

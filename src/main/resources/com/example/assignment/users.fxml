@@ -3,72 +3,80 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.UsersController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #7f8c8d; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="⚙️ User Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Users: 0" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.63" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search users..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colUsername" text="Username" prefWidth="120"/>
-                    <TableColumn fx:id="colRole" text="Role" prefWidth="100"/>
-                    <TableColumn fx:id="colName" text="Full Name" prefWidth="150"/>
-                    <TableColumn fx:id="colEmail" text="Email" prefWidth="160"/>
-                    <TableColumn fx:id="colActive" text="Active" prefWidth="60"/>
-                </columns>
-                <placeholder><Label text="No users found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="10" style="-fx-padding: 20;">
-                <Label text="User Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Username *" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="usernameField" promptText="Username"/>
-
-                <Label text="Password *" style="-fx-font-weight: bold;"/>
-                <PasswordField fx:id="passwordField" promptText="Password"/>
-
-                <Label text="Role *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="roleCombo" promptText="Select role" maxWidth="Infinity"/>
-
-                <Label text="Full Name *" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="fullNameField" promptText="Full name"/>
-
-                <Label text="Email" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="emailField" promptText="Email"/>
-
-                <Label text="Phone" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="phoneField" promptText="Phone"/>
-
-                <Separator/>
-
-                <HBox spacing="8" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Register" onAction="#handleSave" prefWidth="90"/>
-                    <Button fx:id="toggleActiveBtn" text="🔄 Toggle Active" onAction="#handleToggleActive" prefWidth="110"
-                            style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.UsersController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="User Management" styleClass="module-title"/>
+                <Label text="Admin Module — System access control and role management" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search users..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="userTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId"       text="ID"       prefWidth="45"/>
+                        <TableColumn fx:id="colUsername" text="Username" prefWidth="110"/>
+                        <TableColumn fx:id="colRole"     text="Role"     prefWidth="100"/>
+                        <TableColumn fx:id="colName"     text="Full Name" prefWidth="140"/>
+                        <TableColumn fx:id="colEmail"    text="Email"    prefWidth="150"/>
+                        <TableColumn fx:id="colPhone"    text="Phone"    prefWidth="120"/>
+                        <TableColumn fx:id="colActive"   text="Status"   prefWidth="80"/>
+                    </columns>
+                    <placeholder><Label text="No users found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="User Details" styleClass="form-section-title"/>
+
+                    <Label text="Username" styleClass="form-label"/>
+                    <TextField fx:id="usernameField" styleClass="form-field" promptText="Username" maxWidth="Infinity"/>
+
+                    <Label text="Password" styleClass="form-label"/>
+                    <PasswordField fx:id="passwordField" styleClass="form-field" promptText="Password" maxWidth="Infinity"/>
+
+                    <Label text="Role" styleClass="form-label"/>
+                    <ComboBox fx:id="roleCombo" styleClass="combo-box" promptText="Select role" maxWidth="Infinity"/>
+
+                    <Label text="Full Name" styleClass="form-label"/>
+                    <TextField fx:id="fullNameField" styleClass="form-field" promptText="Full name (letters only)" maxWidth="Infinity"/>
+
+                    <Label text="Email" styleClass="form-label"/>
+                    <TextField fx:id="emailField" styleClass="form-field" promptText="name@domain.com" maxWidth="Infinity"/>
+
+                    <Label text="Phone" styleClass="form-label"/>
+                    <HBox spacing="6">
+                        <ComboBox fx:id="countryCodeCombo" styleClass="combo-box"
+                                  prefWidth="130" style="-fx-font-size: 13px;"/>
+                        <TextField fx:id="phoneField" styleClass="form-field" promptText="Phone number"
+                                   HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <Separator/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Button fx:id="saveBtn"         text="Register User"  onAction="#handleSave"         styleClass="btn-primary"/>
+                        <Button fx:id="toggleActiveBtn" text="Toggle Active"  onAction="#handleToggleActive" styleClass="btn-warning"/>
+                        <Button fx:id="deleteBtn"       text="Delete"         onAction="#handleDelete"       styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn"        text="Clear"          onAction="#handleClear"        styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

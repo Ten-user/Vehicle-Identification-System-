@@ -19,8 +19,8 @@ import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
 /**
- * Customer Queries Controller - Customer Module.
- * Uses customer_query_overview VIEW and stored procedures.
+ * Customer Queries Controller - FIXED for fullscreen stability.
+ * CHANGE: showConfirmation() uses callback pattern.
  */
 public class QueriesController implements Initializable {
 
@@ -55,13 +55,15 @@ public class QueriesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // ACCESS GUARD: Only Admin and Customer can access Queries
+        if (!UIUtils.checkAccess("queries")) return;
+
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colCustomer.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("recordDate"));
         colQuery.setCellValueFactory(new PropertyValueFactory<>("queryText"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Color-code status
         colStatus.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -167,13 +169,14 @@ public class QueriesController implements Initializable {
             int customerId = Integer.parseInt(customer.split(" - ")[0]);
             int vehicleId = vehicle != null ? Integer.parseInt(vehicle.split(" - ")[0]) : 0;
 
+            Integer vIdParam = vehicleId > 0 ? vehicleId : null;
             DatabaseConnection db = DatabaseConnection.getInstance();
-            ResultSet rs = db.callProcedure("add_customer_query",
-                customerId, vehicleId > 0 ? vehicleId : null,
-                java.sql.Date.valueOf(date), queryText, statusCombo.getValue() != null ? statusCombo.getValue() : "Pending");
-
-            if (rs != null && rs.next()) {
-                UIUtils.showInfo("Success", "Query added! ID: " + rs.getInt(1));
+            int result = db.executeParameterizedUpdate(
+                "INSERT INTO customer_queries (customer_id, vehicle_id, query_date, query_text, status) VALUES (?, ?, ?, ?, ?)",
+                customerId, vIdParam, java.sql.Date.valueOf(date), queryText,
+                statusCombo.getValue() != null ? statusCombo.getValue() : "Pending");
+            if (result > 0) {
+                UIUtils.showInfo("Success", "Query added!");
                 clearFields(); loadQueries(); setupPagination();
             }
         } catch (Exception e) {
@@ -201,13 +204,16 @@ public class QueriesController implements Initializable {
     @FXML
     private void handleDelete(ActionEvent event) {
         if (selectedQuery == null) { UIUtils.showWarning("No Selection", "Select a query."); return; }
-        if (UIUtils.showConfirmation("Delete", "Delete this query?")) {
-            try {
-                DatabaseConnection db = DatabaseConnection.getInstance();
-                int result = db.executeParameterizedUpdate("DELETE FROM customer_queries WHERE query_id = ?", selectedQuery.getId());
-                if (result > 0) { UIUtils.showInfo("Deleted", "Query deleted."); loadQueries(); setupPagination(); clearFields(); }
-            } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
-        }
+        // FIX: callback-based confirmation
+        UIUtils.showConfirmation("Delete", "Delete this query?", confirmed -> {
+            if (confirmed) {
+                try {
+                    DatabaseConnection db = DatabaseConnection.getInstance();
+                    int result = db.executeParameterizedUpdate("DELETE FROM customer_queries WHERE query_id = ?", selectedQuery.getId());
+                    if (result > 0) { UIUtils.showInfo("Deleted", "Query deleted."); loadQueries(); setupPagination(); clearFields(); }
+                } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
+            }
+        });
     }
 
     @FXML

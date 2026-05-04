@@ -3,68 +3,76 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.CustomersController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #16a085; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="👤 Customer Management" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search customers..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="customerTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colName" text="Name" prefWidth="130"/>
-                    <TableColumn fx:id="colAddress" text="Address" prefWidth="110"/>
-                    <TableColumn fx:id="colPhone" text="Phone" prefWidth="110"/>
-                    <TableColumn fx:id="colEmail" text="Email" prefWidth="150"/>
-                    <TableColumn fx:id="colIdNumber" text="ID Number" prefWidth="130"/>
-                </columns>
-                <placeholder><Label text="No customers found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="12" style="-fx-padding: 20;">
-                <Label text="Customer Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Full Name *" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="nameField" promptText="Full name"/>
-
-                <Label text="Address" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="addressField" promptText="Address"/>
-
-                <Label text="Phone" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="phoneField" promptText="Phone number"/>
-
-                <Label text="Email" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="emailField" promptText="Email address"/>
-
-                <Label text="ID Number" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="idNumberField" promptText="SA ID Number"/>
-
-                <Separator/>
-
-                <HBox spacing="8" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
-                    <Button fx:id="updateBtn" text="✏️ Update" onAction="#handleUpdate" prefWidth="80"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.CustomersController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="Customer Management" styleClass="module-title"/>
+                <Label text="Customer Module — Vehicle owner information (Lesotho)" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search customers..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="customerTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colName" text="Name" prefWidth="140"/>
+                        <TableColumn fx:id="colAddress" text="Address" prefWidth="170"/>
+                        <TableColumn fx:id="colPhone" text="Phone" prefWidth="130"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="160"/>
+                        <TableColumn fx:id="colIdNumber" text="ID Number" prefWidth="120"/>
+                    </columns>
+                    <placeholder><Label text="No records found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="Customer Details" styleClass="form-section-title"/>
+
+                    <Label text="Full Name" styleClass="form-label"/>
+                    <TextField fx:id="nameField" styleClass="form-field" promptText="Full name (letters only)" maxWidth="Infinity"/>
+
+                    <Label text="Address (Lesotho)" styleClass="form-label"/>
+                    <TextField fx:id="addressField" styleClass="form-field" promptText="e.g. Maseru, Lesotho" maxWidth="Infinity"/>
+
+                    <Label text="Phone" styleClass="form-label"/>
+                    <HBox spacing="6">
+                        <ComboBox fx:id="countryCodeCombo" styleClass="combo-box"
+                                  prefWidth="130" style="-fx-font-size: 13px;"/>
+                        <TextField fx:id="phoneField" styleClass="form-field" promptText="Phone number"
+                                   HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+                    <Label text="Email" styleClass="form-label"/>
+                    <TextField fx:id="emailField" styleClass="form-field" promptText="name@domain.com" maxWidth="Infinity"/>
+
+                    <Label text="National ID Number" styleClass="form-label"/>
+                    <TextField fx:id="idNumberField" styleClass="form-field" promptText="Lesotho National ID" maxWidth="Infinity"/>
+
+                    <Separator/>
+                    <HBox spacing="8">
+                        <Button fx:id="saveBtn"   text="Add Customer"    onAction="#handleSave"   styleClass="btn-primary"/>
+                        <Button fx:id="updateBtn" text="Update"          onAction="#handleUpdate" styleClass="btn-warning"/>
+                        <Button fx:id="deleteBtn" text="Delete"          onAction="#handleDelete" styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn"  text="Clear"           onAction="#handleClear"  styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

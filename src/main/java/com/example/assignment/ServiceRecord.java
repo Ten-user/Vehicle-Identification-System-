@@ -46,7 +46,7 @@ public class ServiceRecord extends VehicleRecord {
     }
 
     /**
-     * Formats cost as South African Rand (String Manipulation)
+     * Formats cost as Lesotho Loti (String Manipulation)
      */
     public String getFormattedCost() {
         if (cost == null) return "0.00";

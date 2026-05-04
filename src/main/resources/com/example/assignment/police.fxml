@@ -3,74 +3,83 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.PoliceController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #8e44ad; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="👮 Police Reports" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Reports: 0" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search reports..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="reportTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colRegNumber" text="Vehicle" prefWidth="150"/>
-                    <TableColumn fx:id="colType" text="Type" prefWidth="110"/>
-                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
-                    <TableColumn fx:id="colOfficer" text="Officer" prefWidth="120"/>
-                    <TableColumn fx:id="colStation" text="Station" prefWidth="120"/>
-                    <TableColumn fx:id="colCase" text="Case #" prefWidth="100"/>
-                </columns>
-                <placeholder><Label text="No police reports found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="10" style="-fx-padding: 20;">
-                <Label text="Report Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Vehicle *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle" maxWidth="Infinity"/>
-
-                <Label text="Report Type *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="reportTypeCombo" promptText="Select type" maxWidth="Infinity"/>
-
-                <Label text="Report Date *" style="-fx-font-weight: bold;"/>
-                <DatePicker fx:id="reportDatePicker" maxWidth="Infinity"/>
-
-                <Label text="Description" style="-fx-font-weight: bold;"/>
-                <TextArea fx:id="descriptionArea" promptText="Report description" prefRowCount="3"/>
-
-                <Label text="Officer Name" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="officerField" promptText="Officer name"/>
-
-                <Label text="Station" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="stationField" promptText="Police station"/>
-
-                <Label text="Case Number" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="caseNumberField" promptText="Case number"/>
-
-                <Separator/>
-
-                <HBox spacing="8" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.PoliceController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="Police Reports" styleClass="module-title"/>
+                <Label text="Lesotho Police Service — Incidents, accidents and investigations" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.58" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search reports..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="reportTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colRegNumber" text="Vehicle" prefWidth="120"/>
+                        <TableColumn fx:id="colType" text="Report Type" prefWidth="130"/>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                        <TableColumn fx:id="colOfficer" text="Officer" prefWidth="140"/>
+                        <TableColumn fx:id="colStation" text="Station" prefWidth="150"/>
+                        <TableColumn fx:id="colCase" text="Case No." prefWidth="100"/>
+                    </columns>
+                    <placeholder><Label text="No records found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="Report Details" styleClass="form-section-title"/>
+
+                    <Label text="Vehicle" styleClass="form-label"/>
+                    <ComboBox fx:id="vehicleCombo" styleClass="combo-box" promptText="Select vehicle" maxWidth="Infinity"/>
+
+                    <Label text="Report Type" styleClass="form-label"/>
+                    <ComboBox fx:id="reportTypeCombo" styleClass="combo-box" promptText="Select type" maxWidth="Infinity"/>
+                    <!-- Shows only when "Other" is selected -->
+                    <TextField fx:id="otherTypeField" styleClass="form-field" promptText="Specify report type..."
+                               maxWidth="Infinity" visible="false" managed="false"/>
+
+                    <Label text="Report Date" styleClass="form-label"/>
+                    <DatePicker fx:id="reportDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
+
+                    <Label text="Description" styleClass="form-label"/>
+                    <TextArea fx:id="descriptionArea" styleClass="form-area" promptText="Report description" prefRowCount="3"/>
+
+                    <Label text="Officer Name (auto-filled)" styleClass="form-label"/>
+                    <TextField fx:id="officerField" styleClass="form-field" promptText="Officer name" maxWidth="Infinity"/>
+
+                    <Label text="Police Station (Lesotho District)" styleClass="form-label"/>
+                    <ComboBox fx:id="stationCombo" styleClass="combo-box" promptText="Select station/district" maxWidth="Infinity"/>
+                    <!-- Shows only when "Other" is selected -->
+                    <TextField fx:id="stationCustomField" styleClass="form-field" promptText="Enter police station name..."
+                               maxWidth="Infinity" visible="false" managed="false"/>
+
+                    <Label text="Case Number (auto-generated)" styleClass="form-label"/>
+                    <TextField fx:id="caseNumberField" styleClass="form-field" promptText="CASE001" maxWidth="Infinity"/>
+
+                    <Separator/>
+                    <HBox spacing="8">
+                        <Button fx:id="saveBtn" text="Add Report" onAction="#handleSave" styleClass="btn-primary"/>
+                        <Button fx:id="deleteBtn" text="Delete" onAction="#handleDelete" styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn" text="Clear" onAction="#handleClear" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

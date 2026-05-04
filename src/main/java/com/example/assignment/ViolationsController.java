@@ -16,8 +16,8 @@ import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
 /**
- * Violations Controller - Police/Admin Module.
- * Manages traffic violations: add, delete, mark as paid, search.
+ * Violations Controller - FIXED for fullscreen stability.
+ * CHANGE: showConfirmation() uses callback pattern.
  */
 public class ViolationsController implements Initializable {
 
@@ -56,6 +56,9 @@ public class ViolationsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // ACCESS GUARD: Only Admin and Police can access Violations
+        if (!UIUtils.checkAccess("violations")) return;
+
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("recordDate"));
         colType.setCellValueFactory(new PropertyValueFactory<>("violationType"));
@@ -64,7 +67,6 @@ public class ViolationsController implements Initializable {
         colLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
         colOfficer.setCellValueFactory(new PropertyValueFactory<>("officerName"));
 
-        // Color-code status
         colStatus.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -79,6 +81,15 @@ public class ViolationsController implements Initializable {
                 }
             }
         });
+
+        User currentUser = App.getCurrentUser();
+        if (currentUser != null && officerField != null) {
+            officerField.setText(currentUser.getName());
+            if ("police".equalsIgnoreCase(currentUser.getRole())) {
+                officerField.setEditable(false);
+                officerField.setStyle("-fx-background-color: #F0F4F8; -fx-text-fill: #445566;");
+            }
+        }
 
         violationTypeCombo.getItems().addAll("Speeding", "Red Light", "No Seatbelt",
                 "Drunk Driving", "Reckless Driving", "No License", "No Insurance",
@@ -125,7 +136,7 @@ public class ViolationsController implements Initializable {
             }
             violationTable.setItems(violationList);
             recordCountLabel.setText("Total Records: " + violationList.size());
-            totalFinesLabel.setText("Total Fines: R" + String.format("%,.2f", totalFines));
+            totalFinesLabel.setText("Total Fines: M" + String.format("%,.2f", totalFines));
         } catch (Exception e) {
             UIUtils.showError("Error", "Failed to load violations: " + e.getMessage());
         }
@@ -205,13 +216,16 @@ public class ViolationsController implements Initializable {
     @FXML
     private void handleDelete(ActionEvent event) {
         if (selectedViolation == null) { UIUtils.showWarning("No Selection", "Select a violation."); return; }
-        if (UIUtils.showConfirmation("Delete", "Delete this violation record?")) {
-            try {
-                DatabaseConnection db = DatabaseConnection.getInstance();
-                int result = db.executeParameterizedUpdate("DELETE FROM violations WHERE violation_id = ?", selectedViolation.getId());
-                if (result > 0) { UIUtils.showInfo("Deleted", "Violation deleted."); loadViolations(); setupPagination(); clearFields(); }
-            } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
-        }
+        // FIX: callback-based confirmation
+        UIUtils.showConfirmation("Delete", "Delete this violation record?", confirmed -> {
+            if (confirmed) {
+                try {
+                    DatabaseConnection db = DatabaseConnection.getInstance();
+                    int result = db.executeParameterizedUpdate("DELETE FROM violations WHERE violation_id = ?", selectedViolation.getId());
+                    if (result > 0) { UIUtils.showInfo("Deleted", "Violation deleted."); loadViolations(); setupPagination(); clearFields(); }
+                } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
+            }
+        });
     }
 
     @FXML

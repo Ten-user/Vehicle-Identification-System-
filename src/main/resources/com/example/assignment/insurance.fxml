@@ -1,80 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.InsuranceController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #d35400; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="🛡️ Insurance Policies" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search policies..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="insuranceTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colPolicy" text="Policy #" prefWidth="120"/>
-                    <TableColumn fx:id="colProvider" text="Provider" prefWidth="110"/>
-                    <TableColumn fx:id="colCoverage" text="Coverage" prefWidth="160"/>
-                    <TableColumn fx:id="colStart" text="Start" prefWidth="95"/>
-                    <TableColumn fx:id="colEnd" text="End" prefWidth="95"/>
-                    <TableColumn fx:id="colPremium" text="Premium (R)" prefWidth="95"/>
-                    <TableColumn fx:id="colStatus" text="Active" prefWidth="65"/>
-                </columns>
-                <placeholder><Label text="No insurance policies found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="10" style="-fx-padding: 20;">
-                <Label text="Policy Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Vehicle *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle" maxWidth="Infinity"/>
-
-                <Label text="Customer *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="customerCombo" promptText="Select customer" maxWidth="Infinity"/>
-
-                <Label text="Policy Number *" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="policyNumberField" promptText="e.g. POL-2024-001"/>
-
-                <Label text="Provider *" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="providerField" promptText="Insurance provider"/>
-
-                <Label text="Coverage Type *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="coverageTypeCombo" promptText="Select coverage" maxWidth="Infinity"/>
-
-                <Label text="Start Date *" style="-fx-font-weight: bold;"/>
-                <DatePicker fx:id="startDatePicker" maxWidth="Infinity"/>
-
-                <Label text="End Date *" style="-fx-font-weight: bold;"/>
-                <DatePicker fx:id="endDatePicker" maxWidth="Infinity"/>
-
-                <Label text="Monthly Premium (R)" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="premiumField" promptText="0.00"/>
-
-                <Separator/>
-
-                <HBox spacing="8" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.InsuranceController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="Insurance Policies" styleClass="module-title"/>
+                <Label text="Insurance Module — Policy management and tracking (Lesotho)" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.65" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search policies..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="insuranceTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
+                        <TableColumn fx:id="colVehicle" text="Vehicle" prefWidth="130"/>
+                        <TableColumn fx:id="colCustomer" text="Customer" prefWidth="120"/>
+                        <TableColumn fx:id="colPolicy" text="Policy No." prefWidth="110"/>
+                        <TableColumn fx:id="colProvider" text="Provider" prefWidth="110"/>
+                        <TableColumn fx:id="colCoverage" text="Coverage" prefWidth="150"/>
+                        <TableColumn fx:id="colStart" text="Start" prefWidth="90"/>
+                        <TableColumn fx:id="colEnd" text="End" prefWidth="90"/>
+                        <TableColumn fx:id="colPremium" text="Premium (M)" prefWidth="100"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="75"/>
+                    </columns>
+                    <placeholder><Label text="No records found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="Policy Details" styleClass="form-section-title"/>
+
+                    <Label text="Vehicle" styleClass="form-label"/>
+                    <ComboBox fx:id="vehicleCombo" styleClass="combo-box" promptText="Select vehicle" maxWidth="Infinity"/>
+
+                    <!-- Vehicle image preview -->
+                    <VBox alignment="CENTER" style="-fx-padding: 4 0 4 0;" spacing="4">
+                        <ImageView fx:id="vehicleImageView" fitWidth="200" fitHeight="120" preserveRatio="true"/>
+                        <Label fx:id="vehicleImageLabel" text="Select a vehicle to see image"
+                               style="-fx-font-size: 11px; -fx-text-fill: #889AB0;"/>
+                    </VBox>
+
+                    <Label text="Customer" styleClass="form-label"/>
+                    <ComboBox fx:id="customerCombo" styleClass="combo-box" promptText="Select customer" maxWidth="Infinity"/>
+
+                    <Label text="Policy Number" styleClass="form-label"/>
+                    <TextField fx:id="policyNumberField" styleClass="form-field" promptText="e.g. POL-2026-001" maxWidth="Infinity"/>
+
+                    <Label text="Provider" styleClass="form-label"/>
+                    <TextField fx:id="providerField" styleClass="form-field" promptText="Insurance provider" maxWidth="Infinity"/>
+
+                    <Label text="Coverage Type" styleClass="form-label"/>
+                    <ComboBox fx:id="coverageTypeCombo" styleClass="combo-box" promptText="Select coverage" maxWidth="Infinity"/>
+
+                    <Label text="Start Date" styleClass="form-label"/>
+                    <DatePicker fx:id="startDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
+
+                    <Label text="End Date" styleClass="form-label"/>
+                    <DatePicker fx:id="endDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
+
+                    <Label text="Monthly Premium (M — Lesotho Loti)" styleClass="form-label"/>
+                    <TextField fx:id="premiumField" styleClass="form-field" promptText="0.00" maxWidth="Infinity"/>
+
+                    <Separator/>
+                    <HBox spacing="8">
+                        <Button fx:id="saveBtn" text="Add Policy" onAction="#handleSave" styleClass="btn-primary"/>
+                        <Button fx:id="deleteBtn" text="Delete" onAction="#handleDelete" styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn" text="Clear" onAction="#handleClear" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

@@ -3,77 +3,71 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.assignment.ViolationsController"
-      spacing="0" style="-fx-background-color: #f0f2f5;">
-
-    <HBox style="-fx-background-color: #e74c3c; -fx-padding: 16 24 16 24;" alignment="CENTER_LEFT" spacing="16">
-        <Label text="⚠️ Traffic Violations" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="recordCountLabel" text="Total Records: 0" style="-fx-text-fill: white;"/>
-        <Label fx:id="totalFinesLabel" text="Total Fines: R0.00" style="-fx-text-fill: white;"/>
-        <Button fx:id="backBtn" text="← Dashboard" onAction="#handleBack"
-                style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 6;"/>
-    </HBox>
-
-    <SplitPane dividerPositions="0.62" VBox.vgrow="ALWAYS">
-        <VBox spacing="10" style="-fx-padding: 16;">
-            <HBox spacing="8">
-                <TextField fx:id="searchField" promptText="Search violations..." prefWidth="280"/>
-                <Button fx:id="searchBtn" text="🔍 Search" onAction="#handleSearch"/>
-            </HBox>
-            <TableView fx:id="violationTable" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colId" text="ID" prefWidth="45"/>
-                    <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
-                    <TableColumn fx:id="colType" text="Violation" prefWidth="120"/>
-                    <TableColumn fx:id="colFine" text="Fine (R)" prefWidth="90"/>
-                    <TableColumn fx:id="colStatus" text="Status" prefWidth="80"/>
-                    <TableColumn fx:id="colLocation" text="Location" prefWidth="110"/>
-                    <TableColumn fx:id="colOfficer" text="Officer" prefWidth="110"/>
-                </columns>
-                <placeholder><Label text="No violations found"/></placeholder>
-            </TableView>
-            <Pagination fx:id="pagination"/>
-        </VBox>
-
-        <ScrollPane fitToWidth="true">
-            <VBox spacing="10" style="-fx-padding: 20;">
-                <Label text="Violation Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-
-                <Label text="Vehicle *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="vehicleCombo" promptText="Select vehicle" maxWidth="Infinity"/>
-
-                <Label text="Violation Date *" style="-fx-font-weight: bold;"/>
-                <DatePicker fx:id="violationDatePicker" maxWidth="Infinity"/>
-
-                <Label text="Violation Type *" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="violationTypeCombo" promptText="Select type" maxWidth="Infinity"/>
-
-                <Label text="Fine Amount (R)" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="fineAmountField" promptText="0.00"/>
-
-                <Label text="Status" style="-fx-font-weight: bold;"/>
-                <ComboBox fx:id="statusCombo" promptText="Unpaid / Paid" maxWidth="Infinity"/>
-
-                <Label text="Location" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="locationField" promptText="Location"/>
-
-                <Label text="Officer" style="-fx-font-weight: bold;"/>
-                <TextField fx:id="officerField" promptText="Officer name"/>
-
-                <Separator/>
-
-                <HBox spacing="8" alignment="CENTER">
-                    <Button fx:id="saveBtn" text="💾 Add" onAction="#handleSave" prefWidth="80"/>
-                    <Button fx:id="markPaidBtn" text="✅ Mark Paid" onAction="#handleMarkPaid" prefWidth="90"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="deleteBtn" text="🗑️ Delete" onAction="#handleDelete" prefWidth="80"
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                    <Button fx:id="clearBtn" text="✖ Clear" onAction="#handleClear" prefWidth="80"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 6;"/>
-                </HBox>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.assignment.ViolationsController"
+            style="-fx-background-color: #F5F6FA;">
+    <top>
+        <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
+            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Separator orientation="VERTICAL"/>
+            <VBox spacing="2">
+                <Label text="Traffic Violations" styleClass="module-title"/>
+                <Label text="Police Module — Fines, violations and payment tracking" styleClass="module-subtitle"/>
             </VBox>
-        </ScrollPane>
-    </SplitPane>
-</VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="recordCountLabel" text="0 records" styleClass="info-label"/>
+            <Label fx:id="totalFinesLabel" text="Total: R0.00" styleClass="info-label"/>
+        </HBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+            <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="searchField" styleClass="search-box" promptText="Search violations..."/>
+                    <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
+                </HBox>
+                <TableView fx:id="violationTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: white; -fx-background-radius: 10;
+                                  -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colId"       text="ID"        prefWidth="45"/>
+                        <TableColumn fx:id="colDate"     text="Date"      prefWidth="100"/>
+                        <TableColumn fx:id="colType"     text="Violation" prefWidth="140"/>
+                        <TableColumn fx:id="colFine"     text="Fine (R)"  prefWidth="90"/>
+                        <TableColumn fx:id="colStatus"   text="Status"    prefWidth="90"/>
+                        <TableColumn fx:id="colLocation" text="Location"  prefWidth="120"/>
+                        <TableColumn fx:id="colOfficer"  text="Officer"   prefWidth="120"/>
+                    </columns>
+                    <placeholder><Label text="No violations found" style="-fx-text-fill: #AABBCC;"/></placeholder>
+                </TableView>
+                <Pagination fx:id="pagination"/>
+            </VBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+                <VBox spacing="12" styleClass="form-panel">
+                    <Label text="Violation Details" styleClass="form-section-title"/>
+                    <Label text="Vehicle" styleClass="form-label"/>
+                    <ComboBox fx:id="vehicleCombo" styleClass="combo-box" promptText="Select vehicle" maxWidth="Infinity"/>
+                    <Label text="Violation Date" styleClass="form-label"/>
+                    <DatePicker fx:id="violationDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
+                    <Label text="Violation Type" styleClass="form-label"/>
+                    <ComboBox fx:id="violationTypeCombo" styleClass="combo-box" promptText="Select type" maxWidth="Infinity"/>
+                    <Label text="Fine Amount (R)" styleClass="form-label"/>
+                    <TextField fx:id="fineAmountField" styleClass="form-field" promptText="0.00" maxWidth="Infinity"/>
+                    <Label text="Status" styleClass="form-label"/>
+                    <ComboBox fx:id="statusCombo" styleClass="combo-box" promptText="Paid / Unpaid" maxWidth="Infinity"/>
+                    <Label text="Location" styleClass="form-label"/>
+                    <TextField fx:id="locationField" styleClass="form-field" promptText="Location" maxWidth="Infinity"/>
+                    <Label text="Officer" styleClass="form-label"/>
+                    <TextField fx:id="officerField" styleClass="form-field" promptText="Officer name" maxWidth="Infinity"/>
+                    <Separator/>
+                    <HBox spacing="8">
+                        <Button fx:id="saveBtn"     text="Add"       onAction="#handleSave"     styleClass="btn-primary"/>
+                        <Button fx:id="markPaidBtn" text="Mark Paid" onAction="#handleMarkPaid" styleClass="btn-success"/>
+                        <Button fx:id="deleteBtn"   text="Delete"    onAction="#handleDelete"   styleClass="btn-danger"/>
+                        <Button fx:id="clearBtn"    text="Clear"     onAction="#handleClear"    styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </ScrollPane>
+        </SplitPane>
+    </center>
+</BorderPane>

@@ -20,8 +20,8 @@ import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
 /**
- * Service Records Controller - Workshop Module.
- * Manages vehicle service history, uses vehicle_service_summary VIEW and stored procedures.
+ * Service Records Controller - FIXED for fullscreen stability.
+ * CHANGE: showConfirmation() uses callback pattern.
  */
 public class ServicesController implements Initializable {
 
@@ -59,6 +59,9 @@ public class ServicesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // ACCESS GUARD: Only Admin and Workshop can access Service Records
+        if (!UIUtils.checkAccess("services")) return;
+
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("recordDate"));
         colType.setCellValueFactory(new PropertyValueFactory<>("serviceType"));
@@ -110,7 +113,7 @@ public class ServicesController implements Initializable {
             }
             serviceTable.setItems(serviceList);
             recordCountLabel.setText("Total Records: " + serviceList.size());
-            totalCostLabel.setText("Total Service Cost: R" + String.format("%,.2f", totalCost));
+            totalCostLabel.setText("Total Service Cost: M" + String.format("%,.2f", totalCost));
         } catch (Exception e) {
             UIUtils.showError("Error", "Failed to load services: " + e.getMessage());
         }
@@ -154,17 +157,17 @@ public class ServicesController implements Initializable {
             int vehicleId = Integer.parseInt(vehicle.split(" - ")[0]);
             BigDecimal cost = new BigDecimal(costField.getText().trim());
 
-            // Call stored procedure: add_service_record
+            java.sql.Date nextDate = nextServiceDatePicker.getValue() != null
+                    ? java.sql.Date.valueOf(nextServiceDatePicker.getValue()) : null;
             DatabaseConnection db = DatabaseConnection.getInstance();
-            ResultSet rs = db.callProcedure("add_service_record",
+            int result = db.executeParameterizedUpdate(
+                "INSERT INTO service_records (vehicle_id, service_date, service_type, description, cost, workshop_name, mileage, next_service_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 vehicleId, java.sql.Date.valueOf(date), sType,
                 descriptionArea.getText().trim(), cost,
                 workshopField.getText().trim(),
-                UIUtils.safeParseInt(mileageField.getText(), 0),
-                nextServiceDatePicker.getValue() != null ? java.sql.Date.valueOf(nextServiceDatePicker.getValue()) : null);
-
-            if (rs != null && rs.next()) {
-                UIUtils.showInfo("Success", "Service record added! ID: " + rs.getInt(1));
+                UIUtils.safeParseInt(mileageField.getText(), 0), nextDate);
+            if (result > 0) {
+                UIUtils.showInfo("Success", "Service record added!");
                 clearFields(); loadServices(); setupPagination();
             }
         } catch (Exception e) {
@@ -175,13 +178,16 @@ public class ServicesController implements Initializable {
     @FXML
     private void handleDelete(ActionEvent event) {
         if (selectedService == null) { UIUtils.showWarning("No Selection", "Select a record."); return; }
-        if (UIUtils.showConfirmation("Delete", "Delete this service record?")) {
-            try {
-                DatabaseConnection db = DatabaseConnection.getInstance();
-                int result = db.executeParameterizedUpdate("DELETE FROM service_records WHERE service_id = ?", selectedService.getId());
-                if (result > 0) { UIUtils.showInfo("Deleted", "Service record deleted."); loadServices(); setupPagination(); clearFields(); }
-            } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
-        }
+        // FIX: callback-based confirmation
+        UIUtils.showConfirmation("Delete", "Delete this service record?", confirmed -> {
+            if (confirmed) {
+                try {
+                    DatabaseConnection db = DatabaseConnection.getInstance();
+                    int result = db.executeParameterizedUpdate("DELETE FROM service_records WHERE service_id = ?", selectedService.getId());
+                    if (result > 0) { UIUtils.showInfo("Deleted", "Service record deleted."); loadServices(); setupPagination(); clearFields(); }
+                } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
+            }
+        });
     }
 
     @FXML
