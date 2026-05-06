@@ -9,7 +9,7 @@
             style="-fx-background-color: #F5F6FA;">
     <top>
         <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
-            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Button fx:id="backBtn" text="Back" onAction="#handleBack" styleClass="back-btn"/>
             <Separator orientation="VERTICAL"/>
             <VBox spacing="2">
                 <Label text="Vehicle Management" styleClass="module-title"/>
@@ -20,10 +20,12 @@
         </HBox>
     </top>
     <center>
-        <SplitPane dividerPositions="0.65" style="-fx-background-color: #F5F6FA;">
+        <SplitPane fx:id="mainSplitPane" dividerPositions="0.65" style="-fx-background-color: #F5F6FA;">
             <!-- LEFT: Table -->
             <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="refreshBtn" text="⟳ Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+                    <Region HBox.hgrow="ALWAYS"/>
                     <TextField fx:id="searchField" styleClass="search-box" promptText="Search vehicles..."/>
                     <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
                     <Label fx:id="statusLabel" text="" styleClass="info-label"/>
@@ -48,7 +50,7 @@
                 <Pagination fx:id="pagination"/>
             </VBox>
             <!-- RIGHT: Form + vehicle image -->
-            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+            <ScrollPane fx:id="formPane" fitToWidth="true" style="-fx-background-color: white;">
                 <VBox spacing="12" styleClass="form-panel">
                     <!-- Vehicle image preview -->
                     <VBox alignment="CENTER" spacing="8"
@@ -80,7 +82,7 @@
                     <Label text="Chassis Number" styleClass="form-label"/>
                     <TextField fx:id="chassisNumberField" styleClass="form-field" promptText="Chassis number" maxWidth="Infinity"/>
                     <Separator/>
-                    <HBox spacing="8">
+                    <HBox fx:id="actionBtnsBox" spacing="8">
                         <Button fx:id="saveBtn"   text="Add Vehicle" onAction="#handleSave"   styleClass="btn-primary"/>
                         <Button fx:id="updateBtn" text="Update"      onAction="#handleUpdate" styleClass="btn-warning"/>
                         <Button fx:id="deleteBtn" text="Delete"      onAction="#handleDelete" styleClass="btn-danger"/>

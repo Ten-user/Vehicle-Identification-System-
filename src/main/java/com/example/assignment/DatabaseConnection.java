@@ -1,125 +1,140 @@
 package com.example.assignment;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Database Connection Manager (FULL VERSION for controllers)
+ * Singleton Database Connection Manager for PostgreSQL (Neon)
  */
 public class DatabaseConnection {
-
     private static DatabaseConnection instance;
     private Connection connection;
 
     private DatabaseConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Load PostgreSQL JDBC Driver
+            Class.forName("org.postgresql.Driver");
+            connect();
         } catch (ClassNotFoundException e) {
-            System.err.println("MySQL JDBC Driver not found!");
+            System.err.println("PostgreSQL JDBC Driver not found: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static synchronized DatabaseConnection getInstance() {
+    public static DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();
         }
         return instance;
     }
 
-    public Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(
-                    DatabaseConfig.getJdbcUrl(),
-                    DatabaseConfig.getUsername(),
-                    DatabaseConfig.getPassword()
-            );
+    private void connect() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(
+                        DatabaseConfig.getJdbcUrl(),
+                        DatabaseConfig.getUsername(),
+                        DatabaseConfig.getPassword()
+                );
+                System.out.println("Connected to Neon PostgreSQL successfully!");
+            }
+        } catch (SQLException e) {
+            System.err.println("Database connection failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return connection;
     }
 
-    // =========================
-    // BASIC QUERY METHODS
-    // =========================
+    /**
+     * Execute SELECT query with parameters (PostgreSQL uses $1, $2, etc.)
+     */
+    public ResultSet executeParameterizedQuery(String sql, Object... params) throws SQLException {
+        PreparedStatement stmt = getConnection().prepareStatement(sql);
+        for (int i = 0; i < params.length; i++) {
+            stmt.setObject(i + 1, params[i]);
+        }
+        return stmt.executeQuery();
+    }
 
+    /**
+     * Execute UPDATE/INSERT/DELETE with parameters
+     */
+    public int executeParameterizedUpdate(String sql, Object... params) throws SQLException {
+        PreparedStatement stmt = getConnection().prepareStatement(sql);
+        for (int i = 0; i < params.length; i++) {
+            stmt.setObject(i + 1, params[i]);
+        }
+        return stmt.executeUpdate();
+    }
+
+    /**
+     * Execute INSERT and return generated ID (PostgreSQL uses RETURNING)
+     */
+    public int executeInsertWithReturnId(String sql, Object... params) throws SQLException {
+        PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        for (int i = 0; i < params.length; i++) {
+            stmt.setObject(i + 1, params[i]);
+        }
+        stmt.executeUpdate();
+        ResultSet rs = stmt.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return -1;
+    }
+
+    /**
+     * Execute simple SELECT query
+     */
     public ResultSet executeQuery(String sql) throws SQLException {
         Statement stmt = getConnection().createStatement();
         return stmt.executeQuery(sql);
     }
 
-    public int executeUpdate(String sql) throws SQLException {
-        Statement stmt = getConnection().createStatement();
-        return stmt.executeUpdate(sql);
-    }
-
-    // =========================
-    // PARAMETERIZED QUERY
-    // =========================
-
-    public ResultSet executeParameterizedQuery(String sql, Object... params) throws SQLException {
-        PreparedStatement pstmt = getConnection().prepareStatement(sql);
-
-        for (int i = 0; i < params.length; i++) {
-            pstmt.setObject(i + 1, params[i]);
-        }
-
-        return pstmt.executeQuery();
-    }
-
-    public int executeParameterizedUpdate(String sql, Object... params) throws SQLException {
-        PreparedStatement pstmt = getConnection().prepareStatement(sql);
-
-        for (int i = 0; i < params.length; i++) {
-            pstmt.setObject(i + 1, params[i]);
-        }
-
-        return pstmt.executeUpdate();
-    }
-
-    // =========================
-    // STORED PROCEDURE
-    // =========================
-
-    public ResultSet callProcedure(String procedureName, Object... params) throws SQLException {
-        StringBuilder sql = new StringBuilder("{ CALL " + procedureName + "(");
-
-        for (int i = 0; i < params.length; i++) {
-            sql.append("?");
-            if (i < params.length - 1) sql.append(",");
-        }
-
-        sql.append(") }");
-
-        CallableStatement stmt = getConnection().prepareCall(sql.toString());
-
-        for (int i = 0; i < params.length; i++) {
-            stmt.setObject(i + 1, params[i]);
-        }
-
-        return stmt.executeQuery();
-    }
-
-    // =========================
-    // CONNECTION TEST
-    // =========================
-
+    /**
+     * Test database connection
+     */
     public boolean testConnection() {
-        try (Statement stmt = getConnection().createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT 1")) {
-
-            return rs.next();
-
+        try {
+            Connection conn = getConnection();
+            if (conn != null && !conn.isClosed()) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT version()");
+                if (rs.next()) {
+                    System.out.println("PostgreSQL Version: " + rs.getString(1));
+                }
+                rs.close();
+                stmt.close();
+                return true;
+            }
         } catch (SQLException e) {
-            System.err.println("Connection failed: " + e.getMessage());
-            return false;
+            System.err.println("Connection test failed: " + e.getMessage());
         }
+        return false;
     }
 
+    /**
+     * Close the database connection
+     */
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
+                System.out.println("Database connection closed.");
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error closing connection: " + e.getMessage());
         }
     }
 }

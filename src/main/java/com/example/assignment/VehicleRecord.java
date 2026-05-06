@@ -9,6 +9,7 @@ public abstract class VehicleRecord extends BaseEntity {
     protected int vehicleId;
     protected String recordDate;
     protected String description;
+    protected String vehicleLabel; // display label (e.g. registration number)
 
     public VehicleRecord() {
         super();
@@ -60,4 +61,6 @@ public abstract class VehicleRecord extends BaseEntity {
     public void setRecordDate(String recordDate) { this.recordDate = recordDate; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getVehicleLabel() { return vehicleLabel; }
+    public void setVehicleLabel(String vehicleLabel) { this.vehicleLabel = vehicleLabel; }
 }

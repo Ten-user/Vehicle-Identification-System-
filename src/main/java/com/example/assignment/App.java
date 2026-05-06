@@ -18,23 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-/**
- * FIX SUMMARY for fullscreen glitch:
- *
- * ROOT CAUSE 1: Calling primaryStage.setScene() causes JavaFX to momentarily
- *   exit fullscreen mode, creating the "minimise to right then fullscreen" glitch.
- *   FIX: Use a SINGLE Scene with a StackPane root container. Instead of swapping
- *   scenes, we swap the CONTENT inside the StackPane. This never triggers the
- *   fullscreen exit because the Scene object stays the same.
- *
- * ROOT CAUSE 2: Standard Alert dialogs create a separate OS-level window,
- *   which causes JavaFX to drop fullscreen entirely (the app "disappears").
- *   FIX: UIUtils now uses overlay-based dialogs that render INSIDE the scene,
- *   on top of the current content. No separate window = no fullscreen drop.
- *
- * ADDITIONAL FIX: A fullScreenProperty() listener that force-restores fullscreen
- *   if anything (FileChooser, etc.) causes it to drop. Belt-and-suspenders approach.
- */
+
 public class App extends Application {
 
     private static Stage primaryStage;
@@ -84,7 +68,7 @@ public class App extends Application {
         // KEY FIX: Must call show() — without it the stage is invisible!
         stage.show();
 
-        showSplashThenLogin();
+        showWelcomeScreen();
 
         // Test database connection in background
         new Thread(() -> {
@@ -112,6 +96,33 @@ public class App extends Application {
                 System.exit(0);
             }
         });
+    }
+
+    private void showWelcomeScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/example/assignment/welcome.fxml"));
+            Parent root = loader.load();
+
+            if (root instanceof Region) {
+                ((Region) root).prefWidthProperty().bind(rootContainer.widthProperty());
+                ((Region) root).prefHeightProperty().bind(rootContainer.heightProperty());
+            }
+
+            root.setOpacity(0);
+            primaryStage.setTitle("VIS — Vehicle Identification System");
+            rootContainer.getChildren().setAll(root);
+
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(800), root);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback to login if welcome fails
+            try { loadLoginScene(); } catch (Exception ex) { ex.printStackTrace(); }
+        }
     }
 
     private void showSplashThenLogin() {

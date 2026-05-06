@@ -2,20 +2,18 @@ package com.example.assignment;
 
 public class DatabaseConfig {
 
-    private static final String DB_HOST = "localhost";
-    private static final String DB_PORT = "3306";
-    private static final String DB_NAME = "vis_database";
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "12345"; // <-- change if needed
+    // Neon PostgreSQL Connection Details
+    private static final String DB_HOST = "ep-crimson-tree-ann8acen-pooler.c-6.us-east-1.aws.neon.tech";
+    private static final String DB_PORT = "5432";
+    private static final String DB_NAME = "neondb";
+    private static final String DB_USER = "neondb_owner";
+    private static final String DB_PASSWORD = "npg_FpZt3b4wksDR";
 
     public static String getJdbcUrl() {
-        // NOTE: serverTimezone=UTC bypasses the "Location is not set" JDBC bug
-        return "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
-                + "?useSSL=false"
-                + "&allowPublicKeyRetrieval=true"
-                + "&serverTimezone=UTC"
-                + "&useUnicode=true"
-                + "&characterEncoding=UTF-8";
+        return "jdbc:postgresql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME
+                + "?sslmode=require"
+                + "&ssl=true"
+                + "&sslfactory=org.postgresql.ssl.NonValidatingFactory";
     }
 
     public static String getUsername() { return DB_USER; }

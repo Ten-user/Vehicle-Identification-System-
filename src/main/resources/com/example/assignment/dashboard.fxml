@@ -39,20 +39,20 @@
                 </VBox>
 
                 <!-- Stats Row -->
-                <HBox spacing="16">
-                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <HBox fx:id="statsRow" spacing="16">
+                    <VBox fx:id="statVehiclesCard" spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label fx:id="statVehicles" styleClass="stat-number" text="—" />
                         <Label styleClass="stat-label" text="Vehicles Registered" />
                     </VBox>
-                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox fx:id="statCustomersCard" spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label fx:id="statCustomers" styleClass="stat-number" text="—" />
                         <Label styleClass="stat-label" text="Customers" />
                     </VBox>
-                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox fx:id="statReportsCard" spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label fx:id="statReports" styleClass="stat-number" text="—" />
                         <Label styleClass="stat-label" text="Police Reports" />
                     </VBox>
-                    <VBox spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <VBox fx:id="statViolationsCard" spacing="4" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label fx:id="statViolations" style="-fx-text-fill: #E53E3E;" styleClass="stat-number" text="—" />
                         <Label styleClass="stat-label" text="Unpaid Violations" />
                     </VBox>

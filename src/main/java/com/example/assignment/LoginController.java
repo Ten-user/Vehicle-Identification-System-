@@ -6,23 +6,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
-/**
- * Login Controller — FIXED for fullscreen stability.
- *
- * CHANGES:
- * 1. Replaced showCustomDialog() and showExitConfirmation() custom Stage dialogs
- *    with UIUtils overlay-based dialogs. The old custom Stages (even with initOwner)
- *    could cause the fullscreen to drop on some platforms.
- * 2. Removed all manual setFullScreen(true) calls — the App.java fullscreen
- *    property listener handles this automatically.
- */
 public class LoginController implements Initializable {
 
     @FXML private VBox loginContainer;
@@ -39,6 +30,35 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         if (loginProgress != null) loginProgress.setVisible(false);
         if (passwordField != null) passwordField.setOnAction(e -> handleLogin(e));
+
+        testDatabaseConnection();
+    }
+
+    private void testDatabaseConnection() {
+        try {
+            DatabaseConnection db = DatabaseConnection.getInstance();
+            Connection conn = db.getConnection();
+            if (conn != null && !conn.isClosed()) {
+                systemStatusLabel.setText("Database: Connected");
+                systemStatusLabel.setStyle("-fx-text-fill: #4A90D9;");
+                connectionIndicator.setProgress(1.0);
+                systemHealthBar.setProgress(0.85);
+
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users");
+                if (rs.next()) {
+                    int userCount = rs.getInt(1);
+                    System.out.println("Users table found. Record count: " + userCount);
+                }
+                rs.close();
+                stmt.close();
+            }
+        } catch (Exception e) {
+            systemStatusLabel.setText("Database: Error");
+            systemStatusLabel.setStyle("-fx-text-fill: #e74c3c;");
+            connectionIndicator.setProgress(0.0);
+            System.err.println("Database test failed: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -53,24 +73,35 @@ public class LoginController implements Initializable {
         setStatus("Authenticating...");
 
         try {
-            String sql = "SELECT user_id, username, role, full_name, email, phone, is_active " +
-                    "FROM users WHERE username = ? AND password_hash = ? LIMIT 1";
+            DatabaseConnection db = DatabaseConnection.getInstance();
+            Connection conn = db.getConnection();
 
-            PreparedStatement stmt = DatabaseConnection.getInstance()
-                    .getConnection().prepareStatement(sql);
+            if (conn == null || conn.isClosed()) {
+                setStatus("Database connection failed");
+                UIUtils.showError("Connection Error", "Cannot connect to database.");
+                if (loginProgress != null) loginProgress.setVisible(false);
+                return;
+            }
+
+            // Use authenticate_user function (returns matching active user)
+            String sql = "SELECT u.user_id, u.username, u.role, u.full_name, u.email, u.phone, u.is_active " +
+                    "FROM users u WHERE u.username = ? AND u.password_hash = ? LIMIT 1";
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setString(2, password);
+
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 boolean isActive = rs.getBoolean("is_active");
+                System.out.println("User found: " + username + ", Active: " + isActive);
 
                 if (!isActive) {
                     if (loginProgress != null) loginProgress.setVisible(false);
                     setStatus("");
                     rs.close(); stmt.close();
 
-                    // FIX: Use overlay dialog instead of custom Stage
                     UIUtils.showWarning("Account Deactivated",
                             "Your account has been deactivated by an administrator.\n\n" +
                                     "Please contact the HQ Department to have your account reinstated.\n\n" +
@@ -88,25 +119,28 @@ public class LoginController implements Initializable {
                 App.setCurrentUser(user);
                 if (loginProgress != null) loginProgress.setVisible(false);
                 rs.close(); stmt.close();
+
+                System.out.println("Login successful! Redirecting to dashboard...");
                 App.switchScene("/com/example/assignment/dashboard.fxml", "Dashboard");
 
             } else {
                 if (loginProgress != null) loginProgress.setVisible(false);
                 setStatus("Invalid username or password");
+                System.out.println("Login failed: User not found - " + username);
                 rs.close(); stmt.close();
             }
 
         } catch (Exception e) {
             if (loginProgress != null) loginProgress.setVisible(false);
-            setStatus("Database error");
-            // FIX: Use overlay dialog instead of custom Stage
+            setStatus("Database error: " + e.getMessage());
+            System.err.println("Login error details: ");
+            e.printStackTrace();
             UIUtils.showError("Login Error", "Login failed:\n" + e.getMessage());
         }
     }
 
     @FXML
     private void handleExit(ActionEvent event) {
-        // FIX: Use overlay confirmation instead of custom Stage
         UIUtils.showConfirmation("Confirm Exit",
                 "Are you sure you want to exit?\nAny unsaved data will be lost.",
                 confirmed -> {
@@ -118,6 +152,8 @@ public class LoginController implements Initializable {
     }
 
     private void setStatus(String msg) {
-        if (statusLabel != null) statusLabel.setText(msg);
+        if (statusLabel != null) {
+            Platform.runLater(() -> statusLabel.setText(msg));
+        }
     }
 }

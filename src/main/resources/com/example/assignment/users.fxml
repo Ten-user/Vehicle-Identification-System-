@@ -8,7 +8,7 @@
             style="-fx-background-color: #F5F6FA;">
     <top>
         <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
-            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Button fx:id="backBtn" text="Back" onAction="#handleBack" styleClass="back-btn"/>
             <Separator orientation="VERTICAL"/>
             <VBox spacing="2">
                 <Label text="User Management" styleClass="module-title"/>
@@ -19,9 +19,11 @@
         </HBox>
     </top>
     <center>
-        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+        <SplitPane fx:id="mainSplitPane" dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
             <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="refreshBtn" text="⟳ Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+                    <Region HBox.hgrow="ALWAYS"/>
                     <TextField fx:id="searchField" styleClass="search-box" promptText="Search users..."/>
                     <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
                 </HBox>
@@ -41,12 +43,13 @@
                 </TableView>
                 <Pagination fx:id="pagination"/>
             </VBox>
-            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+            <ScrollPane fx:id="formPane" fitToWidth="true" style="-fx-background-color: white;">
                 <VBox spacing="12" styleClass="form-panel">
                     <Label text="User Details" styleClass="form-section-title"/>
 
                     <Label text="Username" styleClass="form-label"/>
                     <TextField fx:id="usernameField" styleClass="form-field" promptText="Username" maxWidth="Infinity"/>
+                    <Label fx:id="usernameValidLabel" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 11px;" managed="true"/>
 
                     <Label text="Password" styleClass="form-label"/>
                     <PasswordField fx:id="passwordField" styleClass="form-field" promptText="Password" maxWidth="Infinity"/>
@@ -59,6 +62,7 @@
 
                     <Label text="Email" styleClass="form-label"/>
                     <TextField fx:id="emailField" styleClass="form-field" promptText="name@domain.com" maxWidth="Infinity"/>
+                    <Label fx:id="emailValidLabel" text="" style="-fx-text-fill: #e74c3c; -fx-font-size: 11px;" managed="true"/>
 
                     <Label text="Phone" styleClass="form-label"/>
                     <HBox spacing="6">
@@ -69,7 +73,7 @@
                     </HBox>
 
                     <Separator/>
-                    <HBox spacing="8" alignment="CENTER_LEFT">
+                    <HBox fx:id="actionBtnsBox" spacing="8" alignment="CENTER_LEFT">
                         <Button fx:id="saveBtn"         text="Register User"  onAction="#handleSave"         styleClass="btn-primary"/>
                         <Button fx:id="toggleActiveBtn" text="Toggle Active"  onAction="#handleToggleActive" styleClass="btn-warning"/>
                         <Button fx:id="deleteBtn"       text="Delete"         onAction="#handleDelete"       styleClass="btn-danger"/>

@@ -127,16 +127,17 @@ public class UIUtils {
         overlay.prefHeightProperty().bind(rootContainer.heightProperty());
 
         // --- Dialog box ---
-        VBox dialogBox = new VBox(18);
-        dialogBox.setAlignment(Pos.CENTER);
+        VBox dialogBox = new VBox(12);
+        dialogBox.setAlignment(Pos.CENTER_LEFT);
         dialogBox.setStyle(
             "-fx-background-color: #2c3e50;" +
-            "-fx-padding: 30 40;" +
-            "-fx-background-radius: 12;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 25, 0.3, 0, 8);"
+            "-fx-padding: 20 28;" +
+            "-fx-background-radius: 10;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0.3, 0, 6);"
         );
-        dialogBox.setMaxWidth(440);
-        dialogBox.setMinWidth(320);
+        dialogBox.setMaxWidth(520);
+        dialogBox.setMinWidth(380);
+        dialogBox.setMaxHeight(160);
 
         // Accent color by type
         String accentColor;
@@ -161,10 +162,10 @@ public class UIUtils {
         }
 
         // Title label
-        Label titleLabel = new Label(title);
+        Label titleLabel = new Label(iconText + "  " + title);
         titleLabel.setStyle(
             "-fx-text-fill: " + accentColor + ";" +
-            "-fx-font-size: 18px;" +
+            "-fx-font-size: 15px;" +
             "-fx-font-weight: bold;" +
             "-fx-font-family: 'Segoe UI';"
         );
@@ -177,7 +178,7 @@ public class UIUtils {
             "-fx-font-family: 'Segoe UI';"
         );
         messageLabel.setWrapText(true);
-        messageLabel.setMaxWidth(400);
+        messageLabel.setMaxWidth(480);
 
         // Separator line
         Region separator = new Region();
@@ -416,5 +417,62 @@ public class UIUtils {
             // ignore
         }
         return false;
+    }
+
+    // =========================================================================
+    // NODE VISIBILITY HELPERS
+    // =========================================================================
+
+    /** Hide a node and remove it from layout flow */
+    public static void hide(javafx.scene.Node node) {
+        if (node == null) return;
+        node.setVisible(false);
+        node.setManaged(false);
+    }
+
+    /** Show a node and restore it to layout flow */
+    public static void show(javafx.scene.Node node) {
+        if (node == null) return;
+        node.setVisible(true);
+        node.setManaged(true);
+    }
+
+    /** Returns the current user's role in lowercase, or "" if none */
+    public static String currentRole() {
+        User u = App.getCurrentUser();
+        if (u == null || u.getRole() == null) return "";
+        return u.getRole().toLowerCase();
+    }
+
+    /** Returns true if current user is admin */
+    public static boolean isAdmin() { return "admin".equals(currentRole()); }
+    /** Returns true if current user is police */
+    public static boolean isPolice() { return "police".equals(currentRole()); }
+    /** Returns true if current user is workshop */
+    public static boolean isWorkshop() { return "workshop".equals(currentRole()); }
+    /** Returns true if current user is insurance */
+    public static boolean isInsurance() { return "insurance".equals(currentRole()); }
+    /** Returns true if current user is customer */
+    public static boolean isCustomer() { return "customer".equals(currentRole()); }
+
+    /**
+     * Returns true if the current user has write access to a module.
+     * View-only roles (police/workshop/insurance/customer on vehicles;
+     * insurance on customers) return false.
+     */
+    public static boolean canWrite(String moduleName) {
+        String role = currentRole();
+        if ("admin".equals(role)) return true;
+        return switch (moduleName.toLowerCase()) {
+            case "vehicles"   -> false; // only admin can write vehicles
+            case "customers"  -> false; // only admin can write customers
+            case "services"   -> "workshop".equals(role);
+            case "police"     -> "police".equals(role);
+            case "violations" -> "police".equals(role);
+            case "insurance"  -> "insurance".equals(role);
+            case "queries"    -> "customer".equals(role) || "admin".equals(role);
+            case "users"      -> false; // admin only
+            default -> false;
+        };
     }
 }

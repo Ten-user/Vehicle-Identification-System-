@@ -2,13 +2,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.assignment.ServicesController"
             style="-fx-background-color: #F5F6FA;">
     <top>
         <HBox styleClass="module-header" alignment="CENTER_LEFT" spacing="16">
-            <Button text="Back" onAction="#handleBack" styleClass="back-btn"/>
+            <Button fx:id="backBtn" text="Back" onAction="#handleBack" styleClass="back-btn"/>
             <Separator orientation="VERTICAL"/>
             <VBox spacing="2">
                 <Label text="Workshop — Service Records" styleClass="module-title"/>
@@ -19,9 +20,11 @@
         </HBox>
     </top>
     <center>
-        <SplitPane dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
+        <SplitPane fx:id="mainSplitPane" dividerPositions="0.62" style="-fx-background-color: #F5F6FA;">
             <VBox spacing="14" style="-fx-padding: 20; -fx-background-color: #F5F6FA;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="refreshBtn" text="⟳ Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+                    <Region HBox.hgrow="ALWAYS"/>
                     <TextField fx:id="searchField" styleClass="search-box" promptText="Search..."/>
                     <Button fx:id="searchBtn" text="Search" onAction="#handleSearch" styleClass="search-btn"/>
                 </HBox>
@@ -30,21 +33,32 @@
                                   -fx-border-color: #E8EAEF; -fx-border-radius: 10;">
                     <columns>
                         <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                        <TableColumn fx:id="colVehicle" text="Vehicle" prefWidth="120"/>
                         <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
                         <TableColumn fx:id="colType" text="Service Type" prefWidth="140"/>
                         <TableColumn fx:id="colDesc" text="Description" prefWidth="180"/>
                         <TableColumn fx:id="colCost" text="Cost (R)" prefWidth="90"/>
                         <TableColumn fx:id="colWorkshop" text="Workshop" prefWidth="130"/>
+                        <TableColumn fx:id="colNextService" text="Next Service" prefWidth="110"/>
                     </columns>
                     <placeholder><Label text="No records found" style="-fx-text-fill: #AABBCC;"/></placeholder>
                 </TableView>
                 <Pagination fx:id="pagination"/>
             </VBox>
-            <ScrollPane fitToWidth="true" style="-fx-background-color: white;">
+            <ScrollPane fx:id="formPane" fitToWidth="true" style="-fx-background-color: white;">
                 <VBox spacing="12" styleClass="form-panel">
                     <Label text="Details" styleClass="form-section-title"/>
                     <Label text="Vehicle" styleClass="form-label"/>
                     <ComboBox fx:id="vehicleCombo" styleClass="combo-box" promptText="Select vehicle" maxWidth="Infinity"/>
+                    <!-- Vehicle image preview -->
+                    <VBox fx:id="vehicleImageBox" alignment="CENTER" spacing="4"
+                          style="-fx-background-color: #F8F9FC; -fx-background-radius: 8;
+                                 -fx-border-color: #E8EAEF; -fx-border-radius: 8; -fx-padding: 8;">
+                        <ImageView fx:id="vehicleImageView" fitWidth="220" fitHeight="130"
+                                   preserveRatio="true" smooth="true"/>
+                        <Label fx:id="vehicleImageLabel" text="Select a vehicle to see image"
+                               style="-fx-text-fill: #AABBCC; -fx-font-size: 11px;"/>
+                    </VBox>
                     <Label text="Service Date" styleClass="form-label"/>
                     <DatePicker fx:id="serviceDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
                     <Label text="Service Type" styleClass="form-label"/>
@@ -60,7 +74,7 @@
                     <Label text="Next Service Date" styleClass="form-label"/>
                     <DatePicker fx:id="nextServiceDatePicker" styleClass="date-picker" maxWidth="Infinity"/>
                     <Separator/>
-                    <HBox spacing="8">
+                    <HBox fx:id="actionBtnsBox" spacing="8">
                         <Button fx:id="saveBtn" text="Add Record" onAction="#handleSave" styleClass="btn-primary"/>
                         <Button fx:id="deleteBtn" text="Delete" onAction="#handleDelete" styleClass="btn-danger"/>
                         <Button fx:id="clearBtn" text="Clear" onAction="#handleClear" styleClass="btn-secondary"/>

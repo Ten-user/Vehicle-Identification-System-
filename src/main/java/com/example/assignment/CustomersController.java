@@ -1,5 +1,6 @@
 package com.example.assignment;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,13 +15,6 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
-/**
- * Customers Controller - FIXED for fullscreen stability.
- *
- * CHANGE: showConfirmation() now uses callback instead of returning boolean.
- * Old: if (UIUtils.showConfirmation("Delete", "Msg")) { ... }
- * New: UIUtils.showConfirmation("Delete", "Msg", confirmed -> { if (confirmed) { ... } });
- */
 public class CustomersController implements Initializable {
 
     @FXML private TableView<Customer> customerTable;
@@ -47,6 +41,11 @@ public class CustomersController implements Initializable {
     @FXML private Button backBtn;
     @FXML private Label recordCountLabel;
     @FXML private Pagination pagination;
+    @FXML private Button refreshBtn;
+
+    @FXML private javafx.scene.control.ScrollPane formPane;
+    @FXML private javafx.scene.layout.HBox actionBtnsBox;
+    @FXML private SplitPane mainSplitPane;
 
     private ObservableList<Customer> customerList = FXCollections.observableArrayList();
     private Customer selectedCustomer;
@@ -54,7 +53,6 @@ public class CustomersController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // ACCESS GUARD: Only Admin and Insurance can access Customers
         if (!UIUtils.checkAccess("customers")) return;
 
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -72,7 +70,6 @@ public class CustomersController implements Initializable {
         UIUtils.restrictToLetters(nameField);
         UIUtils.restrictToPhone(phoneField);
 
-        // Country code with Lesotho default
         if (countryCodeCombo != null) {
             countryCodeCombo.getItems().addAll(UIUtils.COUNTRY_CODES);
             countryCodeCombo.setValue(UIUtils.DEFAULT_COUNTRY_CODE);
@@ -82,9 +79,20 @@ public class CustomersController implements Initializable {
         setupPagination();
 
         customerTable.getSelectionModel().selectedItemProperty().addListener(
-            (obs, old, newVal) -> {
-                if (newVal != null) { selectedCustomer = newVal; populateFields(newVal); }
-            });
+                (obs, old, newVal) -> {
+                    if (newVal != null) { selectedCustomer = newVal; populateFields(newVal); }
+                });
+
+        applyRoleUI();
+    }
+
+    private void applyRoleUI() {
+        // Admin: full access. Insurance: view only (no add/update/delete).
+        if (!UIUtils.isAdmin()) {
+            UIUtils.hide(formPane);
+            if (mainSplitPane != null)
+                javafx.application.Platform.runLater(() -> mainSplitPane.setDividerPositions(1.0));
+        }
     }
 
     private void loadCustomers() {
@@ -131,15 +139,15 @@ public class CustomersController implements Initializable {
 
             String email = emailField.getText().trim();
             if (!email.isEmpty() && !UIUtils.isValidEmail(email)) {
-                UIUtils.showWarning("Validation", "Please enter a valid email (e.g. name@domain.com)."); return;
+                UIUtils.showWarning("Validation", "Please enter a valid email."); return;
             }
 
             String phone = buildPhone();
 
             DatabaseConnection db = DatabaseConnection.getInstance();
             int result = db.executeParameterizedUpdate(
-                "INSERT INTO customers (name, address, phone, email, id_number) VALUES (?, ?, ?, ?, ?)",
-                name, addressField.getText().trim(), phone, email, idNumberField.getText().trim());
+                    "INSERT INTO customers (name, address, phone, email, id_number) VALUES (?, ?, ?, ?, ?)",
+                    name, addressField.getText().trim(), phone, email, idNumberField.getText().trim());
 
             if (result > 0) {
                 UIUtils.showInfo("Success", "Customer added successfully!");
@@ -156,30 +164,46 @@ public class CustomersController implements Initializable {
         try {
             String name = nameField.getText().trim();
             if (!UIUtils.isLettersOnly(name)) { UIUtils.showWarning("Validation", "Name must contain letters only."); return; }
+
             String email = emailField.getText().trim();
             if (!email.isEmpty() && !UIUtils.isValidEmail(email)) {
                 UIUtils.showWarning("Validation", "Please enter a valid email."); return;
             }
+
             String phone = buildPhone();
+
             DatabaseConnection db = DatabaseConnection.getInstance();
             int result = db.executeParameterizedUpdate(
-                "UPDATE customers SET name=?, address=?, phone=?, email=?, id_number=? WHERE customer_id=?",
-                name, addressField.getText().trim(), phone, email, idNumberField.getText().trim(), selectedCustomer.getId());
-            if (result > 0) { UIUtils.showInfo("Success", "Customer updated!"); loadCustomers(); clearFields(); }
-        } catch (Exception e) { UIUtils.showError("Update Error", e.getMessage()); }
+                    "UPDATE customers SET name=?, address=?, phone=?, email=?, id_number=? WHERE customer_id=?",
+                    name, addressField.getText().trim(), phone, email, idNumberField.getText().trim(), selectedCustomer.getId());
+
+            if (result > 0) {
+                UIUtils.showInfo("Success", "Customer updated!");
+                loadCustomers(); clearFields();
+            }
+        } catch (Exception e) {
+            UIUtils.showError("Update Error", e.getMessage());
+        }
     }
 
     @FXML
     private void handleDelete(ActionEvent event) {
         if (selectedCustomer == null) { UIUtils.showWarning("No Selection", "Select a customer."); return; }
-        // FIX: callback-based confirmation
         UIUtils.showConfirmation("Delete", "Delete customer " + selectedCustomer.getName() + "?", confirmed -> {
             if (confirmed) {
                 try {
                     DatabaseConnection db = DatabaseConnection.getInstance();
-                    int result = db.executeParameterizedUpdate("DELETE FROM customers WHERE customer_id = ?", selectedCustomer.getId());
-                    if (result > 0) { UIUtils.showInfo("Deleted", "Customer deleted."); loadCustomers(); setupPagination(); clearFields(); }
-                } catch (Exception e) { UIUtils.showError("Delete Error", e.getMessage()); }
+                    int result = db.executeParameterizedUpdate(
+                            "DELETE FROM customers WHERE customer_id = ?",
+                            selectedCustomer.getId());
+
+                    if (result > 0) {
+                        UIUtils.showInfo("Deleted", "Customer deleted.");
+                        loadCustomers(); setupPagination(); clearFields();
+                    }
+                } catch (Exception e) {
+                    UIUtils.showError("Delete Error", e.getMessage());
+                }
             }
         });
     }
@@ -188,22 +212,32 @@ public class CustomersController implements Initializable {
     private void handleSearch(ActionEvent event) {
         String keyword = searchField.getText().trim();
         if (keyword.isEmpty()) { loadCustomers(); return; }
+
         try {
             customerList.clear();
             DatabaseConnection db = DatabaseConnection.getInstance();
             ResultSet rs = db.executeParameterizedQuery(
-                "SELECT * FROM customers WHERE name LIKE ? OR email LIKE ? OR phone LIKE ? OR id_number LIKE ?",
-                "%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%");
+                    "SELECT * FROM customers WHERE name LIKE ? OR email LIKE ? OR phone LIKE ? OR id_number LIKE ?",
+                    "%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%");
+
             while (rs != null && rs.next()) {
                 Customer c = new Customer();
-                c.setId(rs.getInt("customer_id")); c.setName(rs.getString("name"));
-                c.setAddress(rs.getString("address")); c.setPhone(rs.getString("phone"));
-                c.setEmail(rs.getString("email")); c.setIdNumber(rs.getString("id_number"));
+                c.setId(rs.getInt("customer_id"));
+                c.setName(rs.getString("name"));
+                c.setAddress(rs.getString("address"));
+                c.setPhone(rs.getString("phone"));
+                c.setEmail(rs.getString("email"));
+                c.setIdNumber(rs.getString("id_number"));
                 customerList.add(c);
             }
+
             customerTable.setItems(customerList);
-            if (recordCountLabel != null) recordCountLabel.setText("Search Results: " + customerList.size());
-        } catch (Exception e) { UIUtils.showError("Search Error", e.getMessage()); }
+            if (recordCountLabel != null)
+                recordCountLabel.setText("Search Results: " + customerList.size());
+
+        } catch (Exception e) {
+            UIUtils.showError("Search Error", e.getMessage());
+        }
     }
 
     private String buildPhone() {
@@ -213,22 +247,34 @@ public class CustomersController implements Initializable {
     }
 
     @FXML private void handleClear(ActionEvent e) { clearFields(); }
-    @FXML private void handleBack(ActionEvent e) {
-        try { App.switchScene("/com/example/assignment/dashboard.fxml", "Dashboard"); }
-        catch (Exception ex) { UIUtils.showError("Error", ex.getMessage()); }
+
+    @FXML private void handleRefresh(ActionEvent e) { loadCustomers(); setupPagination(); }
+
+    @FXML
+    private void handleBack(ActionEvent e) {
+        try {
+            App.switchScene("/com/example/assignment/dashboard.fxml", "Dashboard");
+        } catch (Exception ex) {
+            UIUtils.showError("Error", ex.getMessage());
+        }
     }
 
     private void populateFields(Customer c) {
-        nameField.setText(c.getName()); addressField.setText(c.getAddress());
+        nameField.setText(c.getName());
+        addressField.setText(c.getAddress());
         phoneField.setText(c.getPhone() != null ? c.getPhone() : "");
         emailField.setText(c.getEmail() != null ? c.getEmail() : "");
         idNumberField.setText(c.getIdNumber() != null ? c.getIdNumber() : "");
     }
 
     private void clearFields() {
-        nameField.clear(); addressField.clear(); phoneField.clear();
-        emailField.clear(); idNumberField.clear();
-        if (countryCodeCombo != null) countryCodeCombo.setValue(UIUtils.DEFAULT_COUNTRY_CODE);
+        nameField.clear();
+        addressField.clear();
+        phoneField.clear();
+        emailField.clear();
+        idNumberField.clear();
+        if (countryCodeCombo != null)
+            countryCodeCombo.setValue(UIUtils.DEFAULT_COUNTRY_CODE);
         selectedCustomer = null;
     }
 }

@@ -1,8 +1,5 @@
 package com.example.assignment;
 
-import com.example.assignment.App;
-import com.example.assignment.User;
-import com.example.assignment.UIUtils;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.event.ActionEvent;
@@ -22,6 +19,9 @@ import java.util.ResourceBundle;
 /**
  * Dashboard Controller — strict role-based access.
  *
+ * Hides ENTIRE module cards (image + title + subtitle + button) AND
+ * stat cards for modules the current role cannot access.
+ *
  * ACCESS RULES:
  * ┌───────────┬──────────┬────────────┬─────────┬────────────┬────────────┬───────────┬─────────┬──────┐
  * │ Role      │ Vehicles │ Customers  │ Services│ Police     │ Violations │ Insurance │ Queries │ Users│
@@ -32,18 +32,42 @@ import java.util.ResourceBundle;
  * │ Insurance │    YES   │    YES     │   NO    │    NO      │    NO      │    YES    │   NO    │ NO   │
  * │ Customer  │    YES   │    NO      │   NO    │    NO      │    NO      │    NO     │   YES   │ NO   │
  * └───────────┴──────────┴────────────┴─────────┴────────────┴────────────┴───────────┴─────────┴──────┘
- *
- * Implementation:
- * 1. Dashboard hides ALL module buttons + menu items FIRST, then shows only allowed ones.
- * 2. Each module controller has an access guard that redirects unauthorized users back.
- *    (Defense in depth — even if someone bypasses the dashboard, the controller blocks them.)
  */
 public class DashboardController implements Initializable {
 
-    @FXML private VBox rootContainer;
+    // ── Top nav ──────────────────────────────────────────────────────────────
     @FXML private MenuBar menuBar;
     @FXML private Label welcomeLabel;
     @FXML private Label roleLabel;
+    @FXML private Button logoutBtn;
+    @FXML private ProgressBar systemProgressBar;
+    @FXML private ProgressIndicator systemProgressIndicator;
+    @FXML private Label systemStatusLabel;
+
+    // ── Stat cards (entire VBox containers) ──────────────────────────────────
+    @FXML private HBox statsRow;
+    @FXML private VBox statVehiclesCard;
+    @FXML private VBox statCustomersCard;
+    @FXML private VBox statReportsCard;
+    @FXML private VBox statViolationsCard;
+
+    // ── Stat number labels (for populating live data) ─────────────────────────
+    @FXML private Label statVehicles;
+    @FXML private Label statCustomers;
+    @FXML private Label statReports;
+    @FXML private Label statViolations;
+
+    // ── Module cards (entire VBox — image + title + subtitle + button) ───────
+    @FXML private VBox vehiclesCard;
+    @FXML private VBox customersCard;
+    @FXML private VBox servicesCard;
+    @FXML private VBox policeCard;
+    @FXML private VBox violationsCard;
+    @FXML private VBox insuranceCard;
+    @FXML private VBox queriesCard;
+    @FXML private VBox usersCard;
+
+    // ── Open buttons (kept for effect styling) ────────────────────────────────
     @FXML private Button vehiclesBtn;
     @FXML private Button customersBtn;
     @FXML private Button servicesBtn;
@@ -52,14 +76,8 @@ public class DashboardController implements Initializable {
     @FXML private Button insuranceBtn;
     @FXML private Button queriesBtn;
     @FXML private Button usersBtn;
-    @FXML private Button logoutBtn;
-    @FXML private ProgressBar systemProgressBar;
-    @FXML private ProgressIndicator systemProgressIndicator;
-    @FXML private Label systemStatusLabel;
-    @FXML private Label statVehicles;
-    @FXML private Label statCustomers;
-    @FXML private Label statReports;
-    @FXML private Label statViolations;
+
+    // ── Module images ─────────────────────────────────────────────────────────
     @FXML private ImageView imgVehicles;
     @FXML private ImageView imgCustomers;
     @FXML private ImageView imgServices;
@@ -69,7 +87,7 @@ public class DashboardController implements Initializable {
     @FXML private ImageView imgQueries;
     @FXML private ImageView imgUsers;
 
-    // Menu items stored as fields so we can hide them per role
+    // ── Menu items ────────────────────────────────────────────────────────────
     private MenuItem vehiclesItem, customersItem, servicesItem;
     private MenuItem policeItem, violationsItem, insuranceItem;
     private MenuItem queriesItem, usersItem;
@@ -77,7 +95,6 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         User currentUser = App.getCurrentUser();
-
         if (currentUser != null) {
             welcomeLabel.setText("Welcome, " + currentUser.getName());
             roleLabel.setText(currentUser.getPersonType());
@@ -87,72 +104,56 @@ public class DashboardController implements Initializable {
         setupMenuBar();
         setupFadeAnimation();
         setupProgressIndicators();
-        configureRoleAccess();
+        configureRoleAccess();   // ← hides cards + stat cards + menu items
         loadModuleImages();
         loadLiveStats();
     }
 
+    // ── Button hover effects ──────────────────────────────────────────────────
     private void applyButtonEffects() {
         DropShadow shadow = new DropShadow();
-        shadow.setRadius(10);
-        shadow.setSpread(0.25);
+        shadow.setRadius(10); shadow.setSpread(0.25);
         shadow.setColor(Color.rgb(0, 120, 215, 0.35));
 
-        DropShadow hoverShadow = new DropShadow();
-        hoverShadow.setRadius(15);
-        hoverShadow.setSpread(0.4);
-        hoverShadow.setColor(Color.rgb(0, 120, 215, 0.6));
+        DropShadow hover = new DropShadow();
+        hover.setRadius(15); hover.setSpread(0.4);
+        hover.setColor(Color.rgb(0, 120, 215, 0.6));
 
-        Button[] buttons = {vehiclesBtn, customersBtn, servicesBtn, policeBtn,
-                           violationsBtn, insuranceBtn, queriesBtn, usersBtn};
-
-        for (Button btn : buttons) {
-            if (btn != null) {
-                btn.setEffect(shadow);
-                btn.setOnMouseEntered(e -> btn.setEffect(hoverShadow));
-                btn.setOnMouseExited(e -> btn.setEffect(shadow));
-            }
+        Button[] btns = {vehiclesBtn, customersBtn, servicesBtn, policeBtn,
+                         violationsBtn, insuranceBtn, queriesBtn, usersBtn};
+        for (Button b : btns) {
+            if (b == null) continue;
+            b.setEffect(shadow);
+            b.setOnMouseEntered(e -> b.setEffect(hover));
+            b.setOnMouseExited(e -> b.setEffect(shadow));
         }
 
         DropShadow logoutShadow = new DropShadow();
-        logoutShadow.setRadius(8);
-        logoutShadow.setSpread(0.3);
+        logoutShadow.setRadius(8); logoutShadow.setSpread(0.3);
         logoutShadow.setColor(Color.rgb(231, 76, 60, 0.4));
-        if (logoutBtn != null) {
-            logoutBtn.setEffect(logoutShadow);
-        }
+        if (logoutBtn != null) logoutBtn.setEffect(logoutShadow);
     }
 
+    // ── Menu bar ──────────────────────────────────────────────────────────────
     private void setupMenuBar() {
-        // File menu
         Menu fileMenu = new Menu("File");
         MenuItem refreshItem = new MenuItem("Refresh Dashboard");
         refreshItem.setOnAction(e -> refreshDashboard());
         MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setOnAction(e -> {
-            UIUtils.showInfo("Exit Disabled", "This application cannot be closed during an active session.");
-        });
+        exitItem.setOnAction(e ->
+            UIUtils.showInfo("Exit Disabled",
+                "This application cannot be closed during an active session."));
         fileMenu.getItems().addAll(refreshItem, new SeparatorMenuItem(), exitItem);
 
-        // Modules menu — store items as fields for role-based visibility
         Menu modulesMenu = new Menu("Modules");
-
-        vehiclesItem = new MenuItem("Vehicles");
-        vehiclesItem.setOnAction(e -> navigateToVehicles());
-        customersItem = new MenuItem("Customers");
-        customersItem.setOnAction(e -> navigateToCustomers());
-        servicesItem = new MenuItem("Service Records");
-        servicesItem.setOnAction(e -> navigateToServices());
-        policeItem = new MenuItem("Police Reports");
-        policeItem.setOnAction(e -> navigateToPolice());
-        violationsItem = new MenuItem("Violations");
-        violationsItem.setOnAction(e -> navigateToViolations());
-        insuranceItem = new MenuItem("Insurance");
-        insuranceItem.setOnAction(e -> navigateToInsurance());
-        queriesItem = new MenuItem("Customer Queries");
-        queriesItem.setOnAction(e -> navigateToQueries());
-        usersItem = new MenuItem("User Management");
-        usersItem.setOnAction(e -> navigateToUsers());
+        vehiclesItem   = menuItem("Vehicles",           e -> navigateToVehicles());
+        customersItem  = menuItem("Customers",          e -> navigateToCustomers());
+        servicesItem   = menuItem("Service Records",    e -> navigateToServices());
+        policeItem     = menuItem("Police Reports",     e -> navigateToPolice());
+        violationsItem = menuItem("Violations",         e -> navigateToViolations());
+        insuranceItem  = menuItem("Insurance",          e -> navigateToInsurance());
+        queriesItem    = menuItem("Customer Queries",   e -> navigateToQueries());
+        usersItem      = menuItem("User Management",    e -> navigateToUsers());
 
         modulesMenu.getItems().addAll(
             vehiclesItem, customersItem, servicesItem,
@@ -160,32 +161,122 @@ public class DashboardController implements Initializable {
             new SeparatorMenuItem(), insuranceItem, queriesItem,
             new SeparatorMenuItem(), usersItem);
 
-        // Help menu
         Menu helpMenu = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About VIS");
         aboutItem.setOnAction(e -> UIUtils.showInfo("About Vehicle Identification System",
-                "Vehicle Identification System v1.0 — Kingdom of Lesotho\n\nOOP2 Assignment 2026 — Kingdom of Lesotho\n" +
-                "Built with JavaFX, MVC Architecture, and PostgreSQL (Neon)\n\n" +
-                "Modules: Admin, Workshop, Customer, Insurance, Police"));
+            "Vehicle Identification System v1.0 — Kingdom of Lesotho\n\n" +
+            "OOP2 Assignment 2026 — Kingdom of Lesotho\n" +
+            "Built with JavaFX, MVC Architecture, and PostgreSQL (Neon)\n\n" +
+            "Modules: Admin, Workshop, Customer, Insurance, Police"));
         helpMenu.getItems().add(aboutItem);
 
         menuBar.getMenus().addAll(fileMenu, modulesMenu, helpMenu);
     }
 
-    private void setupFadeAnimation() {
-        if (logoutBtn != null) {
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(2), logoutBtn);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.3);
+    private MenuItem menuItem(String text, javafx.event.EventHandler<ActionEvent> handler) {
+        MenuItem item = new MenuItem(text);
+        item.setOnAction(handler);
+        return item;
+    }
 
-            FadeTransition fadeIn = new FadeTransition(Duration.seconds(2), logoutBtn);
-            fadeIn.setFromValue(0.3);
-            fadeIn.setToValue(1.0);
+    // ── Role-based access ─────────────────────────────────────────────────────
+    /**
+     * STEP 1: Hide EVERYTHING (entire cards + stat cards + menu items).
+     * STEP 2: Reveal only what the current role is allowed to see.
+     *
+     * Cards are hidden with setVisible(false) + setManaged(false) so
+     * layout reflows naturally — no empty gaps left behind.
+     */
+    private void configureRoleAccess() {
+        User user = App.getCurrentUser();
+        if (user == null) return;
+        String role = user.getRole() != null ? user.getRole().toLowerCase() : "";
 
-            SequentialTransition fadeCycle = new SequentialTransition(fadeOut, fadeIn);
-            fadeCycle.setCycleCount(javafx.animation.Animation.INDEFINITE);
-            fadeCycle.play();
+        // ── Step 1: Hide ALL module cards ──────────────────────────────────
+        hideCard(vehiclesCard);   hideMenu(vehiclesItem);
+        hideCard(customersCard);  hideMenu(customersItem);
+        hideCard(servicesCard);   hideMenu(servicesItem);
+        hideCard(policeCard);     hideMenu(policeItem);
+        hideCard(violationsCard); hideMenu(violationsItem);
+        hideCard(insuranceCard);  hideMenu(insuranceItem);
+        hideCard(queriesCard);    hideMenu(queriesItem);
+        hideCard(usersCard);      hideMenu(usersItem);
+
+        // ── Step 1b: Hide ALL stat cards ────────────────────────────────────
+        hideCard(statVehiclesCard);
+        hideCard(statCustomersCard);
+        hideCard(statReportsCard);
+        hideCard(statViolationsCard);
+
+        // ── Step 2: Show allowed items per role ─────────────────────────────
+        switch (role) {
+            case "admin" -> {
+                showCard(vehiclesCard);   showMenu(vehiclesItem);
+                showCard(customersCard);  showMenu(customersItem);
+                showCard(servicesCard);   showMenu(servicesItem);
+                showCard(policeCard);     showMenu(policeItem);
+                showCard(violationsCard); showMenu(violationsItem);
+                showCard(insuranceCard);  showMenu(insuranceItem);
+                showCard(queriesCard);    showMenu(queriesItem);
+                showCard(usersCard);      showMenu(usersItem);
+                showCard(statVehiclesCard);
+                showCard(statCustomersCard);
+                showCard(statReportsCard);
+                showCard(statViolationsCard);
+            }
+            case "police" -> {
+                showCard(vehiclesCard);   showMenu(vehiclesItem);
+                showCard(policeCard);     showMenu(policeItem);
+                showCard(violationsCard); showMenu(violationsItem);
+                showCard(statVehiclesCard);
+                showCard(statReportsCard);
+                showCard(statViolationsCard);
+            }
+            case "workshop" -> {
+                showCard(vehiclesCard);  showMenu(vehiclesItem);
+                showCard(servicesCard);  showMenu(servicesItem);
+                showCard(statVehiclesCard);
+            }
+            case "insurance" -> {
+                showCard(vehiclesCard);  showMenu(vehiclesItem);
+                showCard(customersCard); showMenu(customersItem);
+                showCard(insuranceCard); showMenu(insuranceItem);
+                showCard(statVehiclesCard);
+                showCard(statCustomersCard);
+            }
+            case "customer" -> {
+                showCard(vehiclesCard); showMenu(vehiclesItem);
+                showCard(queriesCard);  showMenu(queriesItem);
+                showCard(statVehiclesCard);
+            }
         }
+    }
+
+    private void hideCard(javafx.scene.Node card) {
+        if (card == null) return;
+        card.setVisible(false);
+        card.setManaged(false);
+    }
+
+    private void showCard(javafx.scene.Node card) {
+        if (card == null) return;
+        card.setVisible(true);
+        card.setManaged(true);
+    }
+
+    private void hideMenu(MenuItem item) { if (item != null) item.setVisible(false); }
+    private void showMenu(MenuItem item) { if (item != null) item.setVisible(true); }
+
+    // ── Misc setup ────────────────────────────────────────────────────────────
+    private void setupFadeAnimation() {
+        if (logoutBtn == null) return;
+        FadeTransition out = new FadeTransition(Duration.seconds(2), logoutBtn);
+        out.setFromValue(1.0); out.setToValue(0.3);
+        FadeTransition in = new FadeTransition(Duration.seconds(2), logoutBtn);
+        in.setFromValue(0.3); in.setToValue(1.0);
+        SequentialTransition cycle = new SequentialTransition(out, in);
+        cycle.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        cycle.play();
     }
 
     private void setupProgressIndicators() {
@@ -194,209 +285,23 @@ public class DashboardController implements Initializable {
         systemStatusLabel.setText("System Status: Online - 85% Health");
     }
 
-    /**
-     * STRICT role-based access control.
-     * Step 1: Hide EVERYTHING (buttons + menu items)
-     * Step 2: Show ONLY what the role allows
-     *
-     * This is a whitelist approach — far safer than blacklisting.
-     */
-    private void configureRoleAccess() {
-        User user = App.getCurrentUser();
-        if (user == null) return;
-        String role = user.getRole() != null ? user.getRole().toLowerCase() : "";
-
-        // ── Step 1: Hide ALL modules ──
-        setModuleVisible(vehiclesBtn, false);
-        setModuleVisible(customersBtn, false);
-        setModuleVisible(servicesBtn, false);
-        setModuleVisible(policeBtn, false);
-        setModuleVisible(violationsBtn, false);
-        setModuleVisible(insuranceBtn, false);
-        setModuleVisible(queriesBtn, false);
-        setModuleVisible(usersBtn, false);
-
-        setMenuItemVisible(vehiclesItem, false);
-        setMenuItemVisible(customersItem, false);
-        setMenuItemVisible(servicesItem, false);
-        setMenuItemVisible(policeItem, false);
-        setMenuItemVisible(violationsItem, false);
-        setMenuItemVisible(insuranceItem, false);
-        setMenuItemVisible(queriesItem, false);
-        setMenuItemVisible(usersItem, false);
-
-        // Also hide stat cards that aren't relevant
-        setLabelVisible(statVehicles, false);
-        setLabelVisible(statCustomers, false);
-        setLabelVisible(statReports, false);
-        setLabelVisible(statViolations, false);
-
-        // ── Step 2: Show ONLY allowed modules per role ──
-        switch (role) {
-            case "admin" -> {
-                // Admin sees EVERYTHING
-                setModuleVisible(vehiclesBtn, true);
-                setModuleVisible(customersBtn, true);
-                setModuleVisible(servicesBtn, true);
-                setModuleVisible(policeBtn, true);
-                setModuleVisible(violationsBtn, true);
-                setModuleVisible(insuranceBtn, true);
-                setModuleVisible(queriesBtn, true);
-                setModuleVisible(usersBtn, true);
-
-                setMenuItemVisible(vehiclesItem, true);
-                setMenuItemVisible(customersItem, true);
-                setMenuItemVisible(servicesItem, true);
-                setMenuItemVisible(policeItem, true);
-                setMenuItemVisible(violationsItem, true);
-                setMenuItemVisible(insuranceItem, true);
-                setMenuItemVisible(queriesItem, true);
-                setMenuItemVisible(usersItem, true);
-
-                setLabelVisible(statVehicles, true);
-                setLabelVisible(statCustomers, true);
-                setLabelVisible(statReports, true);
-                setLabelVisible(statViolations, true);
-            }
-            case "police" -> {
-                // Police: Vehicles, Police Reports, Violations
-                setModuleVisible(vehiclesBtn, true);
-                setModuleVisible(policeBtn, true);
-                setModuleVisible(violationsBtn, true);
-
-                setMenuItemVisible(vehiclesItem, true);
-                setMenuItemVisible(policeItem, true);
-                setMenuItemVisible(violationsItem, true);
-
-                setLabelVisible(statVehicles, true);
-                setLabelVisible(statReports, true);
-                setLabelVisible(statViolations, true);
-            }
-            case "workshop" -> {
-                // Workshop: Vehicles, Service Records
-                setModuleVisible(vehiclesBtn, true);
-                setModuleVisible(servicesBtn, true);
-
-                setMenuItemVisible(vehiclesItem, true);
-                setMenuItemVisible(servicesItem, true);
-
-                setLabelVisible(statVehicles, true);
-            }
-            case "insurance" -> {
-                // Insurance: Vehicles, Insurance, Customers
-                setModuleVisible(vehiclesBtn, true);
-                setModuleVisible(insuranceBtn, true);
-                setModuleVisible(customersBtn, true);
-
-                setMenuItemVisible(vehiclesItem, true);
-                setMenuItemVisible(insuranceItem, true);
-                setMenuItemVisible(customersItem, true);
-
-                setLabelVisible(statVehicles, true);
-                setLabelVisible(statCustomers, true);
-            }
-            case "customer" -> {
-                // Customer: Vehicles (view), Customer Queries
-                setModuleVisible(vehiclesBtn, true);
-                setModuleVisible(queriesBtn, true);
-
-                setMenuItemVisible(vehiclesItem, true);
-                setMenuItemVisible(queriesItem, true);
-
-                setLabelVisible(statVehicles, true);
-            }
-        }
-    }
-
-    private void setModuleVisible(Button btn, boolean visible) {
-        if (btn == null) return;
-        btn.setVisible(visible);
-        btn.setManaged(visible);
-    }
-
-    private void setMenuItemVisible(MenuItem item, boolean visible) {
-        if (item == null) return;
-        item.setVisible(visible);
-    }
-
-    private void setLabelVisible(Label label, boolean visible) {
-        if (label == null) return;
-        label.setVisible(visible);
-        label.setManaged(visible);
-    }
-
-    // Navigation handlers
-    @FXML private void navigateToVehicles() {
-        try { App.switchScene("/com/example/assignment/vehicles.fxml", "Vehicle Management"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToCustomers() {
-        try { App.switchScene("/com/example/assignment/customers.fxml", "Customer Management"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToServices() {
-        try { App.switchScene("/com/example/assignment/services.fxml", "Service Records"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToPolice() {
-        try { App.switchScene("/com/example/assignment/police.fxml", "Police Reports"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToViolations() {
-        try { App.switchScene("/com/example/assignment/violations.fxml", "Violations"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToInsurance() {
-        try { App.switchScene("/com/example/assignment/insurance.fxml", "Insurance Policies"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToQueries() {
-        try { App.switchScene("/com/example/assignment/queries.fxml", "Customer Queries"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-    @FXML private void navigateToUsers() {
-        try { App.switchScene("/com/example/assignment/users.fxml", "User Management"); }
-        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
-    }
-
-    @FXML
-    private void handleLogout(ActionEvent event) {
-        UIUtils.showConfirmation("Logout", "Are you sure you want to logout?", confirmed -> {
-            if (confirmed) {
-                try {
-                    App.logout();
-                } catch (Exception e) {
-                    UIUtils.showError("Logout Error", e.getMessage());
-                }
-            }
-        });
-    }
-
-    private void refreshDashboard() {
-        setupProgressIndicators();
-        configureRoleAccess();
-    }
-
     private void loadModuleImages() {
-        loadModuleImage(imgVehicles,   "vehicles");
-        loadModuleImage(imgCustomers,  "customers");
-        loadModuleImage(imgServices,   "services");
-        loadModuleImage(imgPolice,     "police");
-        loadModuleImage(imgViolations, "violations");
-        loadModuleImage(imgInsurance,  "insurance");
-        loadModuleImage(imgQueries,    "queries");
-        loadModuleImage(imgUsers,      "users");
+        loadImage(imgVehicles,   "vehicles");
+        loadImage(imgCustomers,  "customers");
+        loadImage(imgServices,   "services");
+        loadImage(imgPolice,     "police");
+        loadImage(imgViolations, "violations");
+        loadImage(imgInsurance,  "insurance");
+        loadImage(imgQueries,    "queries");
+        loadImage(imgUsers,      "users");
     }
 
-    private void loadModuleImage(ImageView iv, String name) {
+    private void loadImage(ImageView iv, String name) {
         if (iv == null) return;
-        String[] exts = {".png", ".jpg", ".jpeg"};
-        for (String ext : exts) {
-            java.net.URL url = getClass().getResource("/com/example/assignment/images/modules/" + name + ext);
-            if (url != null) {
-                iv.setImage(new Image(url.toExternalForm()));
-                return;
-            }
+        for (String ext : new String[]{".png", ".jpg", ".jpeg"}) {
+            java.net.URL url = getClass().getResource(
+                "/com/example/assignment/images/modules/" + name + ext);
+            if (url != null) { iv.setImage(new Image(url.toExternalForm())); return; }
         }
     }
 
@@ -416,11 +321,49 @@ public class DashboardController implements Initializable {
                 if (rs != null && rs.next()) statReports.setText(String.valueOf(rs.getInt(1)));
             }
             if (statViolations != null) {
-                java.sql.ResultSet rs = db.executeQuery("SELECT COUNT(*) FROM violations WHERE status = 'Unpaid'");
+                java.sql.ResultSet rs = db.executeQuery(
+                    "SELECT COUNT(*) FROM violations WHERE status = 'Unpaid'");
                 if (rs != null && rs.next()) statViolations.setText(String.valueOf(rs.getInt(1)));
             }
-        } catch (Exception e) {
-            // Stats are cosmetic — silent fail
-        }
+        } catch (Exception ignored) {}
+    }
+
+    private void refreshDashboard() {
+        setupProgressIndicators();
+        configureRoleAccess();
+        loadLiveStats();
+    }
+
+    // ── Navigation handlers ───────────────────────────────────────────────────
+    @FXML private void navigateToVehicles() {
+        navigate("/com/example/assignment/vehicles.fxml", "Vehicle Management"); }
+    @FXML private void navigateToCustomers() {
+        navigate("/com/example/assignment/customers.fxml", "Customer Management"); }
+    @FXML private void navigateToServices() {
+        navigate("/com/example/assignment/services.fxml", "Service Records"); }
+    @FXML private void navigateToPolice() {
+        navigate("/com/example/assignment/police.fxml", "Police Reports"); }
+    @FXML private void navigateToViolations() {
+        navigate("/com/example/assignment/violations.fxml", "Violations"); }
+    @FXML private void navigateToInsurance() {
+        navigate("/com/example/assignment/insurance.fxml", "Insurance Policies"); }
+    @FXML private void navigateToQueries() {
+        navigate("/com/example/assignment/queries.fxml", "Customer Queries"); }
+    @FXML private void navigateToUsers() {
+        navigate("/com/example/assignment/users.fxml", "User Management"); }
+
+    private void navigate(String fxml, String title) {
+        try { App.switchScene(fxml, title); }
+        catch (Exception e) { UIUtils.showError("Navigation Error", e.getMessage()); }
+    }
+
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        UIUtils.showConfirmation("Logout", "Are you sure you want to logout?", confirmed -> {
+            if (confirmed) {
+                try { App.logout(); }
+                catch (Exception e) { UIUtils.showError("Logout Error", e.getMessage()); }
+            }
+        });
     }
 }

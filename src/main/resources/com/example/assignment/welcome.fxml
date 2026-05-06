@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox fx:id="rootHBox" prefHeight="700" prefWidth="1100" styleClass="login-root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.assignment.WelcomeController">
+
+    <!-- LEFT — Brand Panel (identical look to login left panel) -->
+    <VBox spacing="0" styleClass="login-left-panel">
+        <VBox spacing="32" style="-fx-padding: 60 48 60 48;" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="8">
+                <ImageView fx:id="logoView" fitHeight="64" fitWidth="64" preserveRatio="true" smooth="true" />
+                <Label styleClass="login-brand-title" text="VIS" />
+                <Label styleClass="login-brand-sub" text="VEHICLE IDENTIFICATION SYSTEM" />
+            </VBox>
+
+            <Label fx:id="taglineLabel" styleClass="login-tagline" text="Securing Lesotho's roads — one vehicle at a time." wrapText="true" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <HBox spacing="12">
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="8" />
+                    <Label styleClass="login-stat-label" text="MODULES" />
+                </VBox>
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="5" />
+                    <Label styleClass="login-stat-label" text="USER ROLES" />
+                </VBox>
+                <VBox spacing="4" styleClass="login-stat-box" HBox.hgrow="ALWAYS">
+                    <Label styleClass="login-stat-number" text="24/7" />
+                    <Label styleClass="login-stat-label" text="UPTIME" />
+                </VBox>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <VBox spacing="8">
+                <Label styleClass="login-stat-label" text="SYSTEM HEALTH" />
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <ProgressBar prefWidth="180" progress="0.97" style="-fx-accent: #4A90D9;" />
+                    <ProgressIndicator prefHeight="22" prefWidth="22" style="-fx-progress-color: #4A90D9;" />
+                    <Label style="-fx-text-fill: #4A90D9;" styleClass="login-stat-label" text="Online" />
+                </HBox>
+            </VBox>
+
+            <Label styleClass="login-footer" text="Limkwing University — OOP2 2026" />
+        </VBox>
+    </VBox>
+
+    <!-- RIGHT — CTA Panel (white, same as login right panel) -->
+    <VBox fx:id="rightPanel" alignment="CENTER" styleClass="login-right-panel" HBox.hgrow="ALWAYS">
+
+        <!-- Dark/Light toggle pinned top-right -->
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20 40 0 0;">
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="modeLabel" style="-fx-font-size: 10px; -fx-text-fill: #AABBCC; -fx-letter-spacing: 1;" text="🌙  Dark mode" />
+                <Button fx:id="modeToggle" onAction="#handleModeToggle" style="-fx-background-color: #F0F4FF; -fx-background-radius: 20;                                -fx-border-color: #C8D5F0; -fx-border-radius: 20; -fx-border-width: 1;                                -fx-text-fill: #1A5FC8; -fx-font-size: 18px;                                -fx-padding: 6 12; -fx-cursor: hand;" text="◐" />
+            </VBox>
+        </HBox>
+
+        <!-- Centred content -->
+        <VBox alignment="CENTER" maxWidth="380" spacing="0" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="6" style="-fx-padding: 0 0 32 0;">
+                <Label styleClass="login-form-title" text="Welcome to VIS" />
+                <Label styleClass="login-form-sub" text="The Vehicle Identification System for the Kingdom of Lesotho" />
+            </VBox>
+
+            <Pane prefHeight="1" prefWidth="380" styleClass="login-divider" />
+            <Region prefHeight="32" />
+
+            <!-- Feature highlights -->
+            <VBox spacing="16" style="-fx-padding: 0 0 36 0;">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label style="-fx-font-size: 22px;" />
+                    <VBox spacing="2">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1A2332;" text="Vehicle Registry &amp; Tracking" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #8899AA;" text="Full registration, history and status management" />
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label style="-fx-font-size: 22px;" />
+                    <VBox spacing="2">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1A2332;" text="Traffic Law Enforcement" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #8899AA;" text="Violations, fines and police report management" />
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label style="-fx-font-size: 22px;" />
+                    <VBox spacing="2">
+                        <Label style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1A2332;" text="Insurance &amp; Customer Queries" />
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #8899AA;" text="Policy tracking, claims and support channels" />
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- GET STARTED button -->
+            <Button fx:id="getStartedBtn" onAction="#handleGetStarted" prefWidth="380" styleClass="login-btn" text="GET STARTED">
+                <effect>
+                    <DropShadow color="#1A5FC888" offsetY="3" radius="12" spread="0.1" />
+                </effect>
+            </Button>
+
+            <Region prefHeight="16" />
+            <Label maxWidth="380" style="-fx-font-size: 11px; -fx-text-fill: #AABBCC;" text="Authorised personnel only" />
+        </VBox>
+
+    </VBox>
+</HBox>

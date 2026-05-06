@@ -14,6 +14,7 @@ public class Violation extends VehicleRecord {
     private String location;
     private String officerName;
     private String paidDate;
+    private String vehicleLabel; // registration number for display
 
     public Violation() {
         super();
@@ -82,4 +83,6 @@ public class Violation extends VehicleRecord {
     public void setOfficerName(String officerName) { this.officerName = officerName; }
     public String getPaidDate() { return paidDate; }
     public void setPaidDate(String paidDate) { this.paidDate = paidDate; }
+    public String getVehicleLabel() { return vehicleLabel; }
+    public void setVehicleLabel(String vehicleLabel) { this.vehicleLabel = vehicleLabel; }
 }
